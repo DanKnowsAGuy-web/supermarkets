@@ -1,0 +1,152 @@
+---
+// "How your bill actually works" — two data cards drawn from the field record:
+// (A) you're billed for energy AND for your single peak; demand can be a third
+// to half of a commercial bill, and refrigeration makes grocery peaks spiky.
+// (B) refrigerant-side restoration recovers more on older equipment (DOE FEMP),
+// and most grocery refrigeration is well past that line. Both reframe why a
+// supermarket has more to recover than most building types. CSS bars only.
+import Disc from "./Disc.astro";
+
+// documented refrigerant-side recovery by equipment age (DOE FEMP regression)
+const ageBars = [
+  { age: "0–2 yr", lo: 3, hi: 7, h: 16 },
+  { age: "5 yr", lo: 10, hi: 18, h: 42 },
+  { age: "8 yr", lo: 16, hi: 24, h: 62 },
+  { age: "12+ yr", lo: 21, hi: 36, h: 88 },
+];
+---
+
+<section class="section bill" id="bill" aria-labelledby="bill-title">
+  <div class="container">
+    <div class="bill__head reveal">
+      <p class="eyebrow">How your bill actually works</p>
+      <h2 class="bill__title" id="bill-title">
+        A grocery store has more to recover than almost any building type.
+      </h2>
+    </div>
+
+    <div class="bill__grid">
+      <article class="bill__card reveal">
+        <h3 class="bill__card-title">You're billed for power and for peaks.</h3>
+        <p class="bill__card-body">
+          Commercial bills charge two ways: for the energy you use, and for your
+          single highest spike of demand. For many buildings that demand charge
+          alone is a third to half of the bill — and refrigeration compressors
+          cycling against rooftop units make a grocery store's peak especially
+          spiky. Trimming demand is worth far more than the same cut in energy.<Disc to="results" />
+        </p>
+        <div
+          class="bill__bar"
+          role="img"
+          aria-label="Illustrative refrigeration-heavy bill split: about 50 percent energy, 42 percent peak demand, 8 percent fixed fees."
+        >
+          <span class="bill__seg bill__seg--energy" style="--w:50%">50% energy</span>
+          <span class="bill__seg bill__seg--demand" style="--w:42%">42% demand</span>
+          <span class="bill__seg bill__seg--fee" style="--w:8%">8%</span>
+        </div>
+        <p class="bill__note">
+          Illustrative split, typical of a refrigeration-heavy store. Your real
+          ratio comes from your utility data.
+        </p>
+      </article>
+
+      <article class="bill__card reveal">
+        <h3 class="bill__card-title">The older your refrigeration, the more comes back.</h3>
+        <p class="bill__card-body">
+          Cooling systems lose capacity as coils foul and oil films coat the
+          tubes. Restoring it returns the most on older equipment — and most
+          grocery refrigeration is well past the line where recovery is largest.
+        </p>
+        <div
+          class="bill__chart"
+          role="img"
+          aria-label="Documented refrigerant-side recovery rises with equipment age: 3 to 7 percent under two years, up to 36 percent at twelve years and older."
+        >
+          {ageBars.map((b) => (
+            <div class="bill__col">
+              <span class="bill__col-val">{b.lo}–{b.hi}%</span>
+              <span class="bill__col-track"><span class="bill__col-bar" style={`--h:${b.h}%`}></span></span>
+              <span class="bill__col-age">{b.age}</span>
+            </div>
+          ))}
+        </div>
+        <p class="bill__note">
+          Source: U.S. DOE FEMP refrigerant-side treatment regression. An
+          estimator, not a guarantee; confirmed on-site.<Disc to="results" />
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<style>
+  .bill { border-top: 1px solid var(--line); background: var(--bg); }
+  .bill__head { max-width: 54rem; }
+  .bill__title { margin-top: var(--space-xs); font-size: var(--step-3); max-width: 24ch; }
+
+  .bill__grid {
+    margin-top: var(--space-xl);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(1rem, 3vw, 2rem);
+  }
+
+  .bill__card {
+    display: flex;
+    flex-direction: column;
+    padding: clamp(1.4rem, 3vw, 2rem);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+  .bill__card-title { font-size: var(--step-1); color: var(--ink); letter-spacing: -0.01em; }
+  .bill__card-body { margin-top: var(--space-s); font-size: var(--step-0); line-height: 1.55; color: var(--body); }
+  .bill__note {
+    margin-top: var(--space-s);
+    font-family: var(--font-mono); font-size: 0.6rem; line-height: 1.45; color: var(--muted);
+  }
+
+  /* Card A — energy vs demand split bar */
+  .bill__bar {
+    margin-top: auto;
+    padding-top: var(--space-m);
+    display: flex; height: 2.5rem; gap: 2px;
+    font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.03em;
+  }
+  .bill__seg {
+    width: var(--w);
+    display: flex; align-items: center; justify-content: center;
+    white-space: nowrap; padding-inline: 0.25em; border-radius: 3px;
+    color: var(--bg);
+  }
+  .bill__seg--energy { background: var(--h-teal, #5b9dc2); }
+  .bill__seg--demand { background: var(--cost, #d8a55a); }
+  .bill__seg--fee { background: var(--line-strong); color: var(--body); }
+
+  /* Card B — age-vs-recovery bars */
+  .bill__chart {
+    margin-top: auto;
+    padding-top: var(--space-m);
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.7rem;
+  }
+  .bill__col { display: grid; justify-items: center; gap: 0.4rem; }
+  .bill__col-val { font-family: var(--font-mono); font-size: 0.6rem; color: var(--gold-text); }
+  .bill__col-track { height: 120px; width: 100%; max-width: 3.4rem; display: flex; align-items: flex-end; }
+  .bill__col-bar {
+    width: 100%; height: var(--h); min-height: 4px;
+    background: linear-gradient(180deg, var(--gold-text), color-mix(in srgb, var(--gold-text) 35%, transparent));
+    border-radius: 4px 4px 0 0;
+  }
+  .bill__col-age { font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.02em; color: var(--muted); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .bill__col-bar { transform-origin: bottom; animation: billGrow 0.9s var(--ease-out-quart, ease) both; }
+    @keyframes billGrow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+    .bill__seg { animation: billFade 0.7s ease both; }
+  }
+  @keyframes billFade { from { opacity: 0; } to { opacity: 1; } }
+
+  @media (max-width: 46rem) {
+    .bill__grid { grid-template-columns: 1fr; }
+  }
+</style>

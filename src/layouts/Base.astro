@@ -18,6 +18,12 @@ const {
   description = "We cut your supermarket's energy costs and prove the savings at your meter before you pay a cent. We even pay for the diagnosis ourselves.",
 } = Astro.props;
 
+// Base-aware asset paths + absolute URLs for social cards.
+// Normalize so base always ends in a single slash ("/supermarkets/").
+const base = import.meta.env.BASE_URL.replace(/\/+$/, "") + "/";
+const ogImage = Astro.site ? new URL(base + "og.png", Astro.site).href : base + "og.png";
+const canonical = Astro.site ? new URL(base, Astro.site).href : base;
+
 // Vertical through-line waveform paths (built once at compile time).
 // The distorted line is deliberately jagged: harmonic content plus a
 // deterministic point-to-point hash jitter so it reads as violent noise.
@@ -58,11 +64,21 @@ const tlClean = tlPath(false);
     <meta name="description" content={description} />
     <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content="#141a1e" />
+    <link rel="icon" type="image/svg+xml" href={base + "favicon.svg"} />
+    <link rel="canonical" href={canonical} />
     <title>{title}</title>
 
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
 
     <!-- Hybrid-theme prototype fonts (brutal4): grotesque + mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

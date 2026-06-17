@@ -61,11 +61,11 @@ const states = Object.keys(STATE_COOL).map((name) => {
   };
 });
 const counts = [
-  { lo: 1, hi: 1, label: "Just one", short: "1 property" },
-  { lo: 2, hi: 4, label: "2 to 4", short: "2 to 4 properties" },
-  { lo: 5, hi: 9, label: "5 to 9", short: "5 to 9 properties" },
-  { lo: 10, hi: 19, label: "10 to 19", short: "10 to 19 properties" },
-  { lo: 20, hi: 20, label: "20+", short: "20+ properties" },
+  { lo: 1, hi: 1, label: "Just one", short: "1 store" },
+  { lo: 2, hi: 4, label: "2 to 4", short: "2 to 4 stores" },
+  { lo: 5, hi: 9, label: "5 to 9", short: "5 to 9 stores" },
+  { lo: 10, hi: 19, label: "10 to 19", short: "10 to 19 stores" },
+  { lo: 20, hi: 20, label: "20+", short: "20+ stores" },
 ];
 // Monthly electricity spend, per supermarket. Pick a broad band, then dial it in;
 // each narrow option carries a representative monthly midpoint that drives the
@@ -198,7 +198,7 @@ const spendBands = [
       <div class="est__grid">
         <figure class="est__measured">
           <div class="est__dial">
-            <svg viewBox="0 0 200 124" role="img" aria-label="Savings gauge for your estimated annual savings range, per property.">
+            <svg viewBox="0 0 200 124" role="img" aria-label="Savings gauge for your estimated annual savings range, per store.">
               <path class="est__dial-track" d="M18 104 A82 82 0 0 1 182 104"></path>
               <path class="est__dial-band" id="est-band" d="M18 104 A82 82 0 0 1 18 104"></path>
               <g class="est__dial-tick" id="est-tick-lo"><line x1="100" y1="104" x2="100" y2="34"></line></g>
@@ -206,7 +206,7 @@ const spendBands = [
               <circle class="est__dial-hub" cx="100" cy="104" r="6"></circle>
             </svg>
             <div class="est__dial-cap">
-              <span class="est__dial-label">Annual savings, per property<Disc to="results" /></span>
+              <span class="est__dial-label">Annual savings, per store<Disc to="results" /></span>
               <span class="est__dial-val" id="est-newbill">&nbsp;</span>
               <span class="est__dial-sub" id="est-range"></span>
             </div>
@@ -231,12 +231,12 @@ const spendBands = [
         These numbers are modeled from what's typical for your region and
         facility type: average cooling load, local weather, and peak-demand
         charges. The pilot measures what an average can't, your equipment's age
-        and type, and how heavily your property is used.
+        and type, and how heavily your store is used.
       </p>
 
       <div class="est__detail">
         <div class="est__math">
-          <h3 class="est__math-title">Applied to your property</h3>
+          <h3 class="est__math-title">Applied to your store</h3>
           <ol class="est__steps" id="est-steps">
             <li><span class="op">Harmonization, 8% of spend</span><span class="num" id="est-harmo"></span></li>
             <li><span class="op">Cooling optimization, 15–55% of the cooling pool</span><span class="num" id="est-cool"></span></li>
@@ -428,7 +428,7 @@ const spendBands = [
       // report header
       const today = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
       $("est-report-meta").textContent =
-        "Prepared for a " + short.replace("1 property", "single-property") +
+        "Prepared for a " + short.replace("1 store", "single-store") +
         " operator in " + opt.value + " · " + today;
 
       // inputs panel
@@ -453,12 +453,12 @@ const spendBands = [
       $("est-range").textContent =
         "That's " + Math.round((floor / S) * 100) + "% to " +
         Math.round((ceil / S) * 100) +
-        "% of your annual bill, per property, before incentives.";
+        "% of your annual bill, per store, before incentives.";
 
       // portfolio header above the accumulation; the per-year figure is
       // omitted on purpose, the 5- and 10-year boxes carry the portfolio range
       $("est-portfolio-label").textContent =
-        hi > 1 ? "Across " + short + " at similar spend" : "Per property, at this spend";
+        hi > 1 ? "Across " + short + " at similar spend" : "Per store, at this spend";
 
       // escalation applied to savings: annuity factor on the hero range
       const heroFloor = hi > 1 ? floor * lo : floor;
