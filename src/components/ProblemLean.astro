@@ -1,0 +1,178 @@
+---
+// BRUTAL-EDIT VARIANT merging ActOne + Parable into one compact section.
+// Keeps the stat hook and the cause->effect chain, replaces the two insulin
+// prose paragraphs with a two-panel "prescription vs exam" visual + one
+// pull-quote. Cuts roughly half the prose of the two original sections.
+---
+
+<section class="section probl" id="problem" aria-labelledby="probl-title">
+  <div class="container">
+    <div class="probl__grid">
+      <div class="probl__lead reveal">
+        <h2 class="probl__title" id="probl-title">
+          Your building wastes about a third of the energy it buys. So why
+          didn't your last upgrade pay off?
+        </h2>
+        <p class="probl__stat fig">
+          <span class="fig__val" data-countup="30" data-prefix="~" data-suffix="">~30</span>
+          <span class="fig__unit">%</span>
+        </p>
+        <p class="probl__note">
+          The EPA's figure for the average commercial building. Most supermarkets have
+          never had anyone qualified find out where theirs goes.
+        </p>
+      </div>
+
+      <div class="probl__body reveal">
+        <div class="probl__intro">
+          <h3 class="probl__intro-h">You would never give insulin to someone who isn't diabetic.</h3>
+          <p class="probl__intro-p">
+            But that's what a case study is: a vendor selling you what worked in
+            someone else's building, prescribed before anyone examined yours.
+          </p>
+        </div>
+        <div class="probl__panels">
+          <div class="probl__panel probl__panel--bad">
+            <span class="probl__mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.5 20.5 20.5 10.5a4.95 4.95 0 0 0-7-7L3.5 13.5a4.95 4.95 0 0 0 7 7Z" />
+                <path d="m8.5 8.5 7 7" />
+              </svg>
+            </span>
+            <h3>Prescription without an exam</h3>
+            <p>The vendor arrives with the one box they sell, the medicine that worked on someone else's building.</p>
+          </div>
+          <div class="probl__panel probl__panel--good">
+            <span class="probl__mark probl__mark--ok" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6 6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3" />
+                <path d="M8 15v1a6 6 0 0 0 6 6 6 6 0 0 0 6-6v-4" />
+                <circle cx="20" cy="10" r="2" />
+              </svg>
+            </span>
+            <h3>Exam, then prescription</h3>
+            <p>We measure your building first, then fit and modify equipment to what it actually needs.</p>
+          </div>
+        </div>
+        <p class="probl__quote"><span>We don't work for the vendors.</span> <span>We work for you.</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .probl { border-top: 1px solid var(--line); }
+  .probl__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+    gap: clamp(2rem, 6vw, 5rem);
+    align-items: start;
+  }
+  .probl__title { font-size: var(--step-3); max-width: 20ch; }
+  .probl__stat {
+    display: inline-block;
+    margin-top: var(--space-l);
+    font-family: var(--font-serif);
+    font-size: clamp(3.5rem, 9vw, 6rem);
+    line-height: 0.9;
+    color: var(--gold-text);
+    letter-spacing: -0.04em;
+  }
+  .probl__note {
+    margin-top: var(--space-s);
+    font-size: var(--step-0);
+    line-height: 1.6;
+    color: var(--body);
+    max-width: 42ch;
+  }
+  .probl__chain {
+    list-style: none;
+    margin: var(--space-l) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-s);
+    max-width: var(--measure);
+  }
+  .probl__chain li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding-bottom: var(--space-s);
+    border-bottom: 1px solid var(--line);
+    font-size: var(--step-0);
+    line-height: 1.45;
+  }
+  .probl__chain li:last-child { border-bottom: none; padding-bottom: 0; }
+  .probl__cause { color: var(--ink); }
+  .probl__arr { flex: none; font-family: var(--font-mono); color: var(--cost, #e0894a); }
+  .probl__effect { color: var(--muted); }
+
+  /* insulin / case-study framing that sets up the two panels */
+  .probl__intro { margin-bottom: var(--space-m); }
+  .probl__intro-h {
+    font-family: var(--font-serif);
+    font-size: var(--step-2);
+    line-height: 1.12;
+    color: var(--ink);
+    max-width: 22ch;
+  }
+  .probl__intro-p {
+    margin-top: var(--space-s);
+    font-size: var(--step-0);
+    line-height: 1.55;
+    color: var(--body);
+    max-width: 50ch;
+  }
+
+  .probl__panels {
+    display: grid;
+    gap: var(--space-s);
+  }
+  .probl__panel {
+    padding: var(--space-m);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+  .probl__panel h3 {
+    margin-top: var(--space-2xs);
+    font-size: var(--step-1);
+    color: var(--ink);
+  }
+  .probl__panel p {
+    margin-top: var(--space-2xs);
+    font-size: var(--step--1);
+    line-height: 1.55;
+    color: var(--body);
+  }
+  .probl__mark {
+    display: inline-grid;
+    place-items: center;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    color: var(--cost, #e0894a);
+    background: color-mix(in srgb, var(--cost, #e0894a) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--cost, #e0894a) 40%, transparent);
+  }
+  .probl__mark svg { width: 17px; height: 17px; }
+  .probl__mark--ok {
+    color: var(--mint);
+    background: var(--mint-soft);
+    border-color: rgba(91, 194, 162, 0.4);
+  }
+  .probl__panel--good { border-color: rgba(91, 194, 162, 0.35); }
+
+  .probl__quote {
+    margin-top: var(--space-m);
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: var(--step-1);
+    color: var(--ink);
+    max-width: 46ch;
+    text-wrap: balance;
+  }
+  /* each sentence stays whole: one line when it fits, a clean break between
+     the two sentences when it doesn't */
+  .probl__quote span { white-space: nowrap; }
+</style>

@@ -1,0 +1,119 @@
+---
+import Disc from "./Disc.astro";
+const steps = [
+  {
+    n: "01",
+    title: "Apply to see if you qualify",
+    body: "We look at your portfolio and tell you whether a pilot makes sense.",
+    ref: "terms",
+  },
+  {
+    n: "02",
+    title: "We find the leverage, on our dime",
+    body: "We forward you a link, so your utility shows us exactly how you're billed, then a 20-minute video walkthrough with your facilities lead, focused on the highest-leverage areas, not the whole building. No site visit, no cost.",
+    ref: "terms",
+  },
+  {
+    n: "03",
+    title: "You see the number. Then you decide",
+    body: "Nothing is installed and nothing is owed until the floor is proven at your building.",
+    ref: "terms",
+  },
+];
+---
+
+<section class="section plan" aria-labelledby="plan-title">
+  <div class="container">
+    <div class="plan__head reveal">
+      <h2 class="plan__title" id="plan-title">
+        Three steps. You decide after we've proven it.
+      </h2>
+    </div>
+
+    <ol class="plan__steps">
+      {
+        steps.map((s, i) => (
+          <li class="step reveal" style={`--i: ${i}`}>
+            <span class="step__n">{s.n}</span>
+            <div class="step__content">
+              <h3 class="step__title">{s.title}</h3>
+              <p class="step__body">{s.body}<Disc to="terms" /></p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .plan {
+    border-top: 1px solid var(--line);
+  }
+  .plan__head {
+    max-width: 50rem;
+  }
+  .plan__title {
+    margin-top: var(--space-xs);
+    font-size: var(--step-3);
+    max-width: 22ch;
+  }
+
+  .plan__steps {
+    margin: var(--space-xl) 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0;
+    counter-reset: none;
+  }
+  .step {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: clamp(1rem, 4vw, 2.5rem);
+    align-items: baseline;
+    padding: clamp(1.4rem, 3vw, 2rem) 0;
+    border-top: 1px solid var(--line-strong);
+  }
+  .step:last-child {
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .step__n {
+    font-family: var(--font-mono);
+    font-size: var(--step-3);
+    font-weight: 500;
+    color: var(--gold-text);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  /* a tick that draws down from each step number as it reveals */
+  .step__n::after {
+    content: "";
+    display: block;
+    width: 2px;
+    height: 1.6rem;
+    margin: 0.5em auto 0;
+    background: linear-gradient(var(--gold-text), transparent);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.7s var(--ease-out-expo) 0.2s;
+  }
+  .step.is-in .step__n::after { transform: scaleY(1); }
+  .step:last-child .step__n::after { display: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .step__n::after { transition: none; transform: scaleY(1); }
+  }
+  .step__title {
+    font-size: var(--step-2);
+    color: var(--ink);
+    max-width: 24ch;
+  }
+  .step__body {
+    margin-top: var(--space-xs);
+    color: var(--body);
+    font-size: var(--step-0);
+    line-height: 1.6;
+    max-width: 56ch;
+  }
+
+</style>

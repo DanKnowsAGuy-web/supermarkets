@@ -1,0 +1,219 @@
+---
+// Offer as one named, stacked program (Hormozi grand-slam shape): a single
+// "Verified Savings Pilot" card listing every included measure with its
+// outcome, a meter-verified payoff line instead of a fabricated dollar total,
+// a $0 cost-to-find-out, and a named guarantee. Each quantified/conditional
+// claim carries a <Disc> marker tying it to the footer disclaimers.
+import CtaPair from "./CtaPair.astro";
+import Disc from "./Disc.astro";
+const items = [
+  { name: "Meter & equipment-verified diagnosis", desc: "proven for your devices", val: "on us", ref: "terms" },
+  { name: "HVAC efficiency", val: "15–50% of HVAC cost", ref: "results" },
+  { name: "Refrigeration efficiency", val: "15–30% of refrigeration cost", ref: "results" },
+  { name: "Energy harmonization", val: "8–14% of your electric bill", ref: "results" },
+  { name: "Peak demand charge elimination", desc: "what it takes to zero out your demand charges", val: "a plan to zero them out", ref: "results" },
+  { name: "Utility program coverage", val: "up to 50–75% of project cost", ref: "utility" },
+  { name: "Section 179D tax deduction", val: "up to $5.94 / sq ft, one-time", ref: "tax" },
+] as const;
+---
+
+<section class="section offerl" id="offer" aria-labelledby="offerl-title">
+  <div class="container">
+    <div class="offerl__inner reveal">
+      <h2 class="offerl__title" id="offerl-title">What you actually get.</h2>
+
+      <div class="offerl__stack instrument-frame">
+        <p class="offerl__stack-name">The Verified Savings Pilot</p>
+        <p class="offerl__stack-sub">
+          One program. Everything below is included, and your number is measured
+          at your meter before you commit a dollar.
+        </p>
+
+        <ul class="offerl__items">
+          {items.map((it) => (
+            <li class="offerl__item">
+              <span class="offerl__item-ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              </span>
+              <span class="offerl__item-main">
+                <span class="offerl__item-name">{it.name}</span>
+                {it.desc && <span class="offerl__item-desc">{it.desc}</span>}
+              </span>
+              <span class="offerl__item-val">{it.val}<Disc to={it.ref} /></span>
+            </li>
+          ))}
+        </ul>
+
+        <div class="offerl__floor">
+          <div class="offerl__floor-row">
+            <span class="offerl__floor-label">Your savings floor</span>
+            <span class="offerl__floor-val">measured at your meter, not estimated</span>
+          </div>
+          <div class="offerl__floor-row">
+            <span class="offerl__floor-label">Your cost to find out</span>
+            <span class="offerl__floor-cost">$0</span>
+          </div>
+        </div>
+
+        <div class="offerl__guarantee">
+          <p class="offerl__guarantee-h">
+            <span class="offerl__guarantee-ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 2.5 4.5 5.5v5.2c0 4.6 3.2 8.4 7.5 9.8 4.3-1.4 7.5-5.2 7.5-9.8V5.5L12 2.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" /><path d="M8.5 12 11 14.5 16 9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            </span>
+            The Floor Guarantee
+          </p>
+          <p class="offerl__guarantee-p">
+            If we don't prove your savings floor at your own meter, nothing is
+            installed and you owe nothing. Verify first, commit after.
+          </p>
+        </div>
+      </div>
+
+      <CtaPair />
+    </div>
+  </div>
+</section>
+
+<style>
+  .offerl { border-top: 1px solid var(--line); }
+  .offerl__title { font-size: var(--step-3); max-width: 16ch; }
+
+  /* the named, stacked offer card */
+  .offerl__stack {
+    margin-top: var(--space-l);
+    max-width: 46rem;
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+  }
+  .offerl__stack-name {
+    font-family: var(--font-serif);
+    font-size: var(--step-2);
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+  }
+  .offerl__stack-sub {
+    margin-top: var(--space-2xs);
+    font-size: var(--step-0);
+    line-height: 1.55;
+    color: var(--body);
+    max-width: 48ch;
+  }
+
+  .offerl__items {
+    list-style: none;
+    margin: var(--space-m) 0 0;
+    padding: 0;
+    display: grid;
+  }
+  .offerl__item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.85rem;
+    align-items: start;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .offerl__item-ico {
+    display: inline-grid;
+    place-items: center;
+    width: 1.4rem;
+    height: 1.4rem;
+    margin-top: 0.05rem;
+    color: var(--gold-text);
+  }
+  .offerl__item-ico svg { width: 1.4rem; height: 1.4rem; }
+  .offerl__item-name {
+    display: block;
+    font-size: var(--step-0);
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+  .offerl__item-desc {
+    display: block;
+    margin-top: 0.1rem;
+    font-size: var(--step--1);
+    color: var(--muted);
+    line-height: 1.35;
+  }
+  .offerl__item-val {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    font-weight: 500;
+    color: var(--gold-text);
+    text-align: right;
+    line-height: 1.3;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* the payoff: a measured floor in place of a fabricated total, then $0 */
+  .offerl__floor {
+    margin-top: var(--space-m);
+    padding-top: var(--space-m);
+    border-top: 2px solid var(--gold-soft);
+    display: grid;
+    gap: var(--space-xs);
+  }
+  .offerl__floor-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-m);
+  }
+  .offerl__floor-label { font-size: var(--step-0); color: var(--body); }
+  .offerl__floor-val {
+    font-family: var(--font-serif);
+    font-size: var(--step-1);
+    color: var(--ink);
+    text-align: right;
+    line-height: 1.15;
+    max-width: 18ch;
+  }
+  .offerl__floor-cost {
+    font-family: var(--font-serif);
+    font-size: var(--step-2);
+    color: var(--gold-text);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* named guarantee */
+  .offerl__guarantee {
+    margin-top: var(--space-m);
+    padding: var(--space-m);
+    background: color-mix(in srgb, var(--mint) 7%, transparent);
+    border: 1px solid color-mix(in srgb, var(--mint) 35%, transparent);
+    border-radius: var(--radius-s);
+  }
+  .offerl__guarantee-h {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: var(--mint);
+    font-size: var(--step-0);
+  }
+  .offerl__guarantee-ico { display: inline-grid; place-items: center; }
+  .offerl__guarantee-ico svg { width: 1.2rem; height: 1.2rem; }
+  .offerl__guarantee-p {
+    margin-top: 0.4rem;
+    font-size: var(--step--1);
+    line-height: 1.55;
+    color: var(--body);
+  }
+
+  .offerl__inner :global(.cta-pair),
+  .offerl__stack + :global(*) { margin-top: var(--space-l); }
+
+  @media (max-width: 540px) {
+    .offerl__item { grid-template-columns: auto 1fr; }
+    .offerl__item-val {
+      grid-column: 2;
+      text-align: left;
+      margin-top: 0.1rem;
+    }
+  }
+</style>

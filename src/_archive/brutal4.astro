@@ -1,0 +1,78 @@
+---
+// HYBRID "Mix" theme, full page (preview at /brutal4/). Locked palette:
+// Signal teal (verified/clean) + Quiet red (cost/distortion) on a light
+// "calibration" reading surface, with Hero, Harmonizer, and Estimator kept as
+// dark instrument panels (.instrument re-establishes the graphite tokens).
+// Grotesque + mono type throughout. Same components as brutal3, reskinned by
+// token override.
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Hero from "../components/HeroInstrument.astro";
+import OfferLean from "../components/OfferLean.astro";
+import Plan from "../components/Plan.astro";
+import ProblemLean from "../components/ProblemLean.astro";
+import Engineer from "../components/Engineer.astro";
+import ActFourLean from "../components/ActFourLean.astro";
+import Harmonizer from "../components/Harmonizer.astro";
+import Proof from "../components/Proof.astro";
+import HvacLean from "../components/HvacLean.astro";
+import Estimator from "../components/Estimator.astro";
+import Success from "../components/Success.astro";
+import FinalCta from "../components/FinalCta.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<Base>
+  <div class="theme-hybrid">
+    <Header />
+    <main id="main">
+      <div class="instrument"><Hero /></div>
+      <OfferLean />
+      <Plan />
+      <ProblemLean />
+      <Engineer />
+      <ActFourLean />
+      <div class="instrument"><Harmonizer /></div>
+      <Proof />
+      <HvacLean />
+      <div class="instrument"><Estimator /></div>
+      <Success />
+      <FinalCta />
+    </main>
+    <Footer />
+  </div>
+</Base>
+
+<style is:global>
+  /* --- Light "calibration" reading surface (Signal teal + Quiet red) --- */
+  .theme-hybrid {
+    --bg: #f3f4f1; --bg-header: #e9ebe6; --hero-from: #f3f4f1; --hero-to: #e9ebe6;
+    --surface: #ffffff; --surface-2: #eceee9;
+    --ink: #161916; --body: #41463f; --muted: #6b6f67;
+    --gold: #0e7d88; --gold-text: #0e7d88; --mint: #0e7d88; --cost: #97493a;
+    --line: rgba(20, 25, 20, 0.12); --line-strong: rgba(20, 25, 20, 0.2);
+    --gold-soft: rgba(14, 125, 136, 0.08); --mint-soft: rgba(14, 125, 136, 0.1);
+    --font-serif: "Hanken Grotesk", system-ui, sans-serif;
+    --font-sans: "Hanken Grotesk", system-ui, sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, monospace;
+    background: #f3f4f1;
+    color: #161916;
+  }
+  .theme-hybrid .btn { background: var(--ink); color: var(--bg); }
+  .theme-hybrid .btn:hover { background: #2f352e; box-shadow: none; }
+  .theme-hybrid .afl__fig { color: var(--cost) !important; }
+
+  /* --- Dark instrument panels (graphite + Signal teal + Quiet red) ----- */
+  .theme-hybrid .instrument {
+    --bg: #0e1114; --bg-header: #0a0c0e; --hero-from: #1c2024; --hero-to: #0f1216;
+    --surface: #15191d; --surface-2: #1c2127;
+    --ink: #eef0ec; --body: #c2c8c4; --muted: #8a9090;
+    --gold: #1f8390; --gold-text: #46cfd6; --mint: #46cfd6; --cost: #c87a64;
+    --h-red: #c87a64; --h-teal: #46cfd6;
+    --line: rgba(220, 228, 230, 0.13); --line-strong: rgba(220, 228, 230, 0.22);
+    --gold-soft: rgba(31, 131, 144, 0.12); --mint-soft: rgba(70, 207, 214, 0.14);
+    background: var(--bg);
+  }
+  .theme-hybrid .instrument .btn { background: var(--gold); color: var(--bg); }
+  .theme-hybrid .instrument .btn:hover { background: #2aa0af; }
+</style>

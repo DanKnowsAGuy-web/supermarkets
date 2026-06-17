@@ -1,0 +1,123 @@
+---
+import logo from "../assets/energy-plus-logo.png";
+---
+
+<header class="site-header" id="top">
+  <div class="container site-header__inner">
+    <a href="#top" class="wordmark" aria-label="Energy Plus Supermarkets, home">
+      <img class="wordmark__logo" src={logo.src} width="118" height="34" alt="Energy Plus" />
+      <span class="wordmark__div" aria-hidden="true"></span>
+      <span class="wordmark__industry">Supermarkets</span>
+    </a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <a href="#problem" class="site-nav__link">The problem</a>
+      <a href="#what-we-find" class="site-nav__link">What we find</a>
+      <a href="#proof" class="site-nav__link">Proof</a>
+      <a href="#calculator" class="site-nav__link">Calculator</a>
+      <a href="#book" class="btn site-header__cta">
+        Apply Now
+        <span class="btn__arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  /* non-sticky: the bar scrolls away so it never overlaps the pinned
+     power-quality scene below. */
+  .site-header {
+    position: relative;
+    z-index: var(--z-header);
+    background: var(--bg-header);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 68px;
+    gap: var(--space-m);
+  }
+
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .wordmark__logo {
+    height: 30px;
+    width: auto;
+    display: block;
+  }
+  .wordmark__div {
+    width: 1px;
+    height: 22px;
+    background: var(--line-strong);
+  }
+  .wordmark__industry {
+    font-family: "Oswald", var(--font-sans);
+    font-weight: 600;
+    font-size: 1.28rem;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  .site-nav {
+    display: flex;
+    align-items: center;
+    gap: clamp(1rem, 2.6vw, 2.2rem);
+  }
+  .site-nav__link {
+    position: relative;
+    color: var(--body);
+    text-decoration: none;
+    font-size: var(--step--1);
+    font-weight: 500;
+    transition: color 0.25s ease;
+  }
+  .site-nav__link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 100%;
+    height: 1px;
+    background: var(--gold-text);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform 0.3s var(--ease-out-quart);
+  }
+  .site-nav__link:hover {
+    color: var(--ink);
+  }
+  .site-nav__link:hover::after {
+    transform: scaleX(1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .site-nav__link::after {
+      transition: none;
+    }
+  }
+
+  .site-header__cta {
+    padding: 0.65em 1.1em;
+    font-size: var(--step--1);
+  }
+
+  @media (max-width: 720px) {
+    .site-nav__link {
+      display: none;
+    }
+    /* the long pill overflowed onto the wordmark; the hero CTA sits right
+       below, so the header is just the brand on small screens */
+    .site-header__cta {
+      display: none;
+    }
+  }
+</style>

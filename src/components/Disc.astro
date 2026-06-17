@@ -1,0 +1,23 @@
+---
+// Superscript reference to a numbered disclaimer in the footer. Use as
+// <Disc to="results" /> right after a claim; it links to the matching note
+// at #disc-<to>. Keeps every quantified/conditional claim tied to its
+// disclaimer so the page stays legally readable.
+interface Props {
+  to: "results" | "terms" | "tax" | "utility";
+}
+const { to } = Astro.props;
+const num: Record<Props["to"], number> = {
+  results: 1, terms: 2, tax: 3, utility: 4,
+};
+const label: Record<Props["to"], string> = {
+  results: "savings and performance figures",
+  terms: "program terms and eligibility",
+  tax: "tax incentives",
+  utility: "utility and incentive programs",
+};
+---
+
+<sup class="disc-ref"><a href={`#disc-${to}`} aria-label={`See disclaimer ${num[to]}, ${label[to]}`}>{num[to]}</a></sup>
+<!-- .disc-ref styled globally (src/styles/global.css) so JS-injected markers match -->
+

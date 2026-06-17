@@ -1,0 +1,23 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+.astro/
+
+# env / local
+.env
+.env.*
+*.log
+
+# editor / OS
+.DS_Store
+Thumbs.db
+
+# impeccable working files
+.impeccable-critique-body.md
+
+# scratch / working dirs
+_saveenergy/
+_ghp/
+

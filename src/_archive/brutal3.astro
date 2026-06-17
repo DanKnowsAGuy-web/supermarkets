@@ -1,0 +1,43 @@
+---
+// BRUTAL-EDIT DRAFT v3 (third pass) — preview only at /brutal3/.
+// Changes vs brutal2:
+//  - WhoWeWork removed (let them book; explain fit afterward)
+//  - Floor section -> FloorStrip, placed directly above the Estimator
+//  - HvacShelf scroll-scene -> HvacLean (static scannable 5-row spec list)
+//  - Free-diagnosis de-duped (PayLean dropped its restating step, now 3 steps)
+//  - One sentence of parable warmth restored under ProblemLean's two-panel
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Hero from "../components/Hero.astro";
+import OfferLean from "../components/OfferLean.astro";
+import Plan from "../components/Plan.astro";
+import ProblemLean from "../components/ProblemLean.astro";
+import Engineer from "../components/Engineer.astro";
+import ActFourLean from "../components/ActFourLean.astro";
+import Harmonizer from "../components/Harmonizer.astro";
+import Proof from "../components/Proof.astro";
+import HvacLean from "../components/HvacLean.astro";
+import Estimator from "../components/Estimator.astro";
+import Success from "../components/Success.astro";
+import FinalCta from "../components/FinalCta.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<Base>
+  <Header />
+  <main id="main">
+    <Hero />
+    <OfferLean />
+    <Plan />
+    <ProblemLean />
+    <Engineer />
+    <ActFourLean />
+    <Harmonizer />
+    <Proof />
+    <HvacLean />
+    <Estimator />
+    <Success />
+    <FinalCta />
+  </main>
+  <Footer />
+</Base>

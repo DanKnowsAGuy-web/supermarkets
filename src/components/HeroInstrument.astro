@@ -1,0 +1,721 @@
+---
+// HYBRID-THEME hero: a recolor of Hero.astro into the unified instrument
+// palette — graphite ground, red distortion (kept), brass->teal for the clean/
+// verified signals. Forked so the original forest/brass hero stays intact on
+// the other pages. Structure + JS identical to Hero.astro.
+import CtaPair from "./CtaPair.astro";
+import Disc from "./Disc.astro";
+function grid(x0, y0, cols, rows, gapX, gapY, w, h, lit) {
+  const cells = [];
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      cells.push({ x: x0 + c * gapX, y: y0 + r * gapY, w, h, lit: lit.has(r + "-" + c) });
+    }
+  }
+  return cells;
+}
+const tower = grid(448, 150, 5, 9, 40, 42, 26, 28,
+  new Set(["1-3", "2-0", "3-2", "4-4", "5-1", "6-3", "7-0", "8-2"]));
+const wingL = grid(322, 262, 2, 6, 46, 48, 28, 30, new Set(["0-1", "3-0", "5-1"]));
+const wingR = grid(676, 262, 2, 6, 46, 48, 28, 30, new Set(["1-0", "2-1", "4-0"]));
+
+function wire(x1, y1, x2, y2, amp = 2.4, wl = 17) {
+  const dx = x2 - x1, dy = y2 - y1;
+  const len = Math.hypot(dx, dy) || 1;
+  const ux = dx / len, uy = dy / len;
+  const px = -uy, py = ux;
+  const steps = Math.max(12, Math.round(len / 3));
+  let d = "";
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const off = amp * Math.sin((t * len) / wl * Math.PI * 2);
+    const x = x1 + dx * t + px * off;
+    const y = y1 + dy * t + py * off;
+    d += (i === 0 ? "M" : "L") + x.toFixed(1) + " " + y.toFixed(1);
+  }
+  return d;
+}
+const mains = [
+  [540, 100, 540, 542, 2.2, 15],
+  [470, 128, 470, 540, 2.4, 17],
+  [610, 128, 610, 540, 2.4, 17],
+  [360, 244, 360, 540, 2.4, 17],
+  [720, 244, 720, 540, 2.4, 17],
+];
+const runs = [
+  [470, 162, 610, 162], [470, 204, 610, 204], [360, 288, 720, 288],
+  [320, 372, 760, 372], [360, 456, 720, 456], [470, 498, 610, 498],
+  [300, 312, 430, 312], [650, 312, 780, 312],
+  [300, 456, 430, 456], [650, 456, 780, 456],
+];
+const branches = [
+  [540, 128, 540, 102, 3.2, 12],
+  [540, 288, 600, 330, 3.4, 12],
+  [470, 456, 366, 452, 3.4, 12],
+  [540, 498, 500, 520, 3.4, 12],
+  [610, 498, 720, 512, 3.4, 12],
+  [540, 372, 470, 372, 3.4, 12],
+  [360, 312, 360, 324, 3.4, 10],
+];
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero__scene" aria-hidden="true">
+    <div class="xray__layer xray__inner">
+      <svg viewBox="0 0 1000 580" preserveAspectRatio="xMidYMax slice" role="presentation">
+        <defs>
+          <radialGradient id="heat" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#ff8a4d" stop-opacity="0.95" />
+            <stop offset="45%" stop-color="#e0542b" stop-opacity="0.5" />
+            <stop offset="100%" stop-color="#e0542b" stop-opacity="0" />
+          </radialGradient>
+          <linearGradient id="redwire" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#ff5a3c" />
+            <stop offset="100%" stop-color="#c5301a" />
+          </linearGradient>
+          <pattern id="blueprint" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M40 0 H0 V40" fill="none" stroke="rgba(150,185,195,0.10)" stroke-width="1" />
+          </pattern>
+        </defs>
+
+        <rect x="0" y="0" width="1000" height="640" fill="#0a0c0e" />
+        <rect x="0" y="0" width="1000" height="640" fill="url(#blueprint)" />
+
+        <g stroke="rgba(220,228,230,0.12)" stroke-width="1.2" fill="none">
+          <path d="M430 120 H650 V560 H430 Z" />
+          <path d="M300 240 H430 M300 240 V560 H430" />
+          <path d="M650 240 H780 M780 240 V560 H650" />
+          <line x1="280" y1="560" x2="800" y2="560" stroke-width="1.5" />
+          {[162, 204, 246, 288, 330, 372, 414, 456, 498].map((y) => (<line x1="430" y1={y} x2="650" y2={y} />))}
+          {[312, 384, 456].map((y) => (<line x1="300" y1={y} x2="430" y2={y} />))}
+          {[312, 384, 456].map((y) => (<line x1="650" y1={y} x2="780" y2={y} />))}
+        </g>
+
+        <g class="wires" fill="none" stroke="url(#redwire)" stroke-linecap="round">
+          {runs.map((w, i) => (<path class="wire wire--run" style={`--d:${(i % 5) * 0.18}s`} d={wire(w[0], w[1], w[2], w[3])} />))}
+          {mains.map((w, i) => (<path class="wire wire--main" style={`--d:${i * 0.12}s`} d={wire(w[0], w[1], w[2], w[3], w[4], w[5])} />))}
+          {branches.map((w, i) => (<path class="wire wire--branch" style={`--d:${i * 0.1}s`} d={wire(w[0], w[1], w[2], w[3], w[4], w[5])} />))}
+        </g>
+
+        <g class="dev" data-dev="ahu" data-name="Rooftop AHUs" data-cost="920" data-metric="PF 0.81">
+
+          <circle class="dev__glow" cx="540" cy="96" r="36" fill="url(#heat)" />
+          <g class="dev__body">
+            <rect x="506" y="80" width="68" height="26" rx="3" />
+            <line x1="514" y1="80" x2="514" y2="106" /><line x1="522" y1="80" x2="522" y2="106" />
+            <line x1="558" y1="80" x2="558" y2="106" /><line x1="566" y1="80" x2="566" y2="106" />
+          </g>
+          <g class="dev__spin" style="--spin:2.2s">
+            <circle class="dev__hub" cx="540" cy="93" r="3" />
+            <ellipse class="dev__blade" cx="540" cy="85" rx="3.4" ry="8" />
+            <ellipse class="dev__blade" cx="548" cy="93" rx="8" ry="3.4" />
+            <ellipse class="dev__blade" cx="540" cy="101" rx="3.4" ry="8" />
+            <ellipse class="dev__blade" cx="532" cy="93" rx="8" ry="3.4" />
+          </g>
+          <g class="dev__tag" transform="translate(584 72)">
+            <line x1="-12" y1="24" x2="0" y2="16" stroke="#4fc4cf" stroke-width="1" />
+            <text x="4" y="20">Rooftop units fighting each other</text>
+          </g>
+        </g>
+
+        <g class="dev" data-dev="laundry" data-name="Laundry exhaust" data-cost="360" data-metric="+14&#176;F loss">
+
+          <circle class="dev__glow" cx="600" cy="330" r="32" fill="url(#heat)" />
+          <g class="dev__plume">
+            <path class="dev__wisp" d="M592 314 q-5 -10 0 -20" /><path class="dev__wisp" d="M600 314 q5 -12 0 -24" />
+            <path class="dev__wisp" d="M608 314 q-5 -10 0 -18" />
+          </g>
+          <g class="dev__body"><rect x="578" y="312" width="44" height="38" rx="4" /></g>
+          <g class="dev__spin" style="--spin:1.7s">
+            <circle class="dev__hub" cx="600" cy="331" r="3" />
+            <ellipse class="dev__blade" cx="600" cy="320" rx="3.6" ry="9" />
+            <ellipse class="dev__blade" cx="610" cy="331" rx="9" ry="3.6" />
+            <ellipse class="dev__blade" cx="600" cy="342" rx="3.6" ry="9" />
+            <ellipse class="dev__blade" cx="590" cy="331" rx="9" ry="3.6" />
+          </g>
+          <g class="dev__tag" transform="translate(630 312)">
+            <line x1="-10" y1="14" x2="0" y2="14" stroke="#4fc4cf" stroke-width="1" />
+            <text x="4" y="18">Exhaust dumping cooled air</text>
+          </g>
+        </g>
+
+        <g class="dev" data-dev="switch" data-name="Switchgear" data-cost="640" data-metric="PF 0.78" transform="translate(243 -242)">
+
+          <circle class="dev__glow" cx="365" cy="452" r="34" fill="url(#heat)" />
+          <g class="dev__body">
+            <rect x="342" y="430" width="46" height="48" rx="3" />
+            <rect x="349" y="436" width="14" height="10" rx="1.5" /><rect x="367" y="436" width="14" height="10" rx="1.5" />
+            <rect x="349" y="450" width="14" height="10" rx="1.5" /><rect x="367" y="450" width="14" height="10" rx="1.5" />
+          </g>
+          <path class="dev__gauge" d="M348 474 a16 16 0 0 1 32 0" fill="none" />
+          <line class="dev__needle" x1="364" y1="474" x2="352" y2="468" />
+          <path class="dev__arc" d="M356 442 l4 4 l-3 3 l5 5" fill="none" />
+          <g class="dev__tag" transform="translate(150 494)">
+            <line x1="186" y1="-24" x2="196" y2="-16" stroke="#4fc4cf" stroke-width="1" />
+            <text x="0" y="0">Power factor sagging at the switchgear</text>
+          </g>
+        </g>
+
+        <g class="dev" data-dev="boiler" data-name="Boilers" data-cost="480" data-metric="9 cycles/hr">
+
+          <circle class="dev__glow" cx="500" cy="520" r="32" fill="url(#heat)" />
+          <g class="dev__cycle">
+            <g class="dev__body">
+              <rect x="482" y="498" width="36" height="46" rx="6" />
+              <line x1="500" y1="498" x2="500" y2="488" /><circle cx="510" cy="506" r="3" />
+            </g>
+            <path class="dev__flame" d="M500 540 q-7 -8 -3 -16 q4 5 3 -2 q5 6 3 11 q3 -3 3 2 q-1 6 -9 5 Z" />
+          </g>
+          <g class="dev__tag" transform="translate(374 556)">
+            <line x1="120" y1="-30" x2="130" y2="-24" stroke="#4fc4cf" stroke-width="1" />
+            <text x="0" y="0">Boilers short-cycling</text>
+          </g>
+        </g>
+
+        <g class="dev" data-dev="chiller" data-name="Chiller" data-cost="1180" data-metric="42% part-load">
+
+          <circle class="dev__glow" cx="720" cy="512" r="36" fill="url(#heat)" />
+          <g class="dev__body">
+            <rect x="694" y="496" width="52" height="34" rx="9" />
+            <line x1="730" y1="496" x2="730" y2="530" />
+            <path d="M744 504 q10 8 0 18" fill="none" />
+          </g>
+          <g class="dev__spin dev__spin--stutter" style="--spin:5s">
+            <circle class="dev__hub" cx="708" cy="513" r="2.6" />
+            <line class="dev__vane" x1="708" y1="513" x2="708" y2="503" /><line class="dev__vane" x1="708" y1="513" x2="718" y2="513" />
+            <line class="dev__vane" x1="708" y1="513" x2="708" y2="523" /><line class="dev__vane" x1="708" y1="513" x2="698" y2="513" />
+          </g>
+          <g class="dev__tag" transform="translate(704 556)">
+            <line x1="20" y1="-36" x2="28" y2="-28" stroke="#4fc4cf" stroke-width="1" />
+            <text x="0" y="0">Chiller stuck at part-load</text>
+          </g>
+        </g>
+
+        <g class="dev" data-dev="pump" data-name="Hot-water pumps" data-cost="410" data-metric="runs 24/7" transform="translate(120 44)">
+
+          <circle class="dev__glow" cx="470" cy="372" r="30" fill="url(#heat)" />
+          <g class="dev__body">
+            <circle cx="470" cy="372" r="15" />
+            <rect x="466" y="349" width="8" height="10" rx="1" />
+            <rect x="484" y="368" width="11" height="9" rx="1" />
+          </g>
+          <g class="dev__spin" style="--spin:2s">
+            <circle class="dev__hub" cx="470" cy="372" r="3" />
+            <path class="dev__vane" d="M470 372 q9 -5 12 3" fill="none" />
+            <path class="dev__vane" d="M470 372 q-9 5 -12 -3" fill="none" />
+            <path class="dev__vane" d="M470 372 q5 9 -3 12" fill="none" />
+            <path class="dev__vane" d="M470 372 q-5 -9 3 -12" fill="none" />
+          </g>
+          <g class="dev__tag" transform="translate(360 338)">
+            <line x1="100" y1="22" x2="110" y2="30" stroke="#4fc4cf" stroke-width="1" />
+            <text x="0" y="0">Hot-water loop running around the clock</text>
+          </g>
+        </g>
+
+        <g class="dev" data-dev="fridge" data-name="Walk-in cooler" data-cost="290" data-metric="no defrost cycle">
+
+          <circle class="dev__glow" cx="360" cy="324" r="30" fill="url(#heat)" />
+          <g class="dev__body">
+            <rect x="338" y="306" width="44" height="38" rx="3" />
+            <line x1="344" y1="313" x2="354" y2="313" /><line x1="344" y1="321" x2="354" y2="321" /><line x1="344" y1="329" x2="354" y2="329" /><line x1="344" y1="337" x2="354" y2="337" />
+          </g>
+          <g class="dev__frost">
+            <path d="M345 311 v4 M343 313 h4 M344 312 l2 2 M346 312 l-2 2" />
+            <path d="M351 335 v3 M349.5 336.5 h3" />
+          </g>
+          <g class="dev__spin" style="--spin:2.6s">
+            <circle class="dev__hub" cx="368" cy="325" r="2.6" />
+            <ellipse class="dev__blade" cx="368" cy="318" rx="2.8" ry="6" />
+            <ellipse class="dev__blade" cx="375" cy="325" rx="6" ry="2.8" />
+            <ellipse class="dev__blade" cx="368" cy="332" rx="2.8" ry="6" />
+            <ellipse class="dev__blade" cx="361" cy="325" rx="6" ry="2.8" />
+          </g>
+          <g class="dev__tag" transform="translate(160 300)">
+            <line x1="172" y1="22" x2="182" y2="30" stroke="#4fc4cf" stroke-width="1" />
+            <text x="0" y="0">Walk-in refrigeration never cycling off</text>
+          </g>
+        </g>
+      </svg>
+    </div>
+
+    <div class="xray__layer xray__skin">
+      <svg viewBox="0 0 1000 580" preserveAspectRatio="xMidYMax slice" role="presentation">
+        <defs>
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#1c2024" />
+            <stop offset="55%" stop-color="#14171b" />
+            <stop offset="100%" stop-color="#0f1216" />
+          </linearGradient>
+          <radialGradient id="moon" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="rgba(120,200,210,0.16)" />
+            <stop offset="100%" stop-color="rgba(120,200,210,0)" />
+          </radialGradient>
+          <radialGradient id="lobby" cx="50%" cy="40%" r="60%">
+            <stop offset="0%" stop-color="rgba(79,196,207,0.5)" />
+            <stop offset="100%" stop-color="rgba(79,196,207,0)" />
+          </radialGradient>
+          <filter id="lit" x="-120%" y="-120%" width="340%" height="340%">
+            <feGaussianBlur stdDeviation="5" result="b" />
+            <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+        </defs>
+
+        <rect x="0" y="0" width="1000" height="640" fill="url(#sky)" />
+        <circle cx="760" cy="150" r="240" fill="url(#moon)" />
+
+        <g fill="#1b1f23" stroke="rgba(220,228,230,0.18)" stroke-width="1.3">
+          <rect x="300" y="240" width="130" height="320" />
+          <rect x="650" y="240" width="130" height="320" />
+          <rect x="430" y="120" width="220" height="440" />
+          <rect x="418" y="104" width="244" height="18" />
+          <rect x="288" y="226" width="154" height="16" />
+          <rect x="638" y="226" width="154" height="16" />
+          <rect x="508" y="90" width="64" height="16" />
+        </g>
+        <path d="M488 104 L540 78 L592 104 Z" fill="#20252a" stroke="rgba(220,228,230,0.2)" stroke-width="1.3" />
+        <rect x="280" y="556" width="520" height="6" fill="#15181b" />
+        <line x1="120" y1="562" x2="880" y2="562" stroke="rgba(220,228,230,0.16)" stroke-width="1.3" />
+
+        <g stroke="rgba(220,228,230,0.07)" stroke-width="1">
+          <line x1="474" y1="124" x2="474" y2="556" /><line x1="518" y1="124" x2="518" y2="556" />
+          <line x1="562" y1="124" x2="562" y2="556" /><line x1="606" y1="124" x2="606" y2="556" />
+        </g>
+
+        <g fill="#11151a" stroke="rgba(220,228,230,0.12)" stroke-width="1">
+          {tower.filter((w) => !w.lit).map((w) => (<rect x={w.x} y={w.y} width={w.w} height={w.h} rx="1.5" />))}
+          {wingL.filter((w) => !w.lit).map((w) => (<rect x={w.x} y={w.y} width={w.w} height={w.h} rx="1.5" />))}
+          {wingR.filter((w) => !w.lit).map((w) => (<rect x={w.x} y={w.y} width={w.w} height={w.h} rx="1.5" />))}
+        </g>
+
+        <g class="lit-win" fill="#4fc4cf" filter="url(#lit)">
+          {tower.filter((w) => w.lit).map((w) => (<rect x={w.x} y={w.y} width={w.w} height={w.h} rx="1.5" opacity="0.78" />))}
+          {wingL.filter((w) => w.lit).map((w) => (<rect x={w.x} y={w.y} width={w.w} height={w.h} rx="1.5" opacity="0.78" />))}
+          {wingR.filter((w) => w.lit).map((w) => (<rect x={w.x} y={w.y} width={w.w} height={w.h} rx="1.5" opacity="0.78" />))}
+        </g>
+
+        <ellipse cx="540" cy="556" rx="80" ry="60" fill="url(#lobby)" />
+        <path d="M508 560 V512 a32 32 0 0 1 64 0 V560 Z" fill="#0e1114" stroke="rgba(79,196,207,0.5)" stroke-width="1.4" />
+        <path d="M508 512 a32 32 0 0 1 64 0" fill="none" stroke="#4fc4cf" stroke-width="1.4" opacity="0.7" />
+
+        <!-- hotel tells: a porte-cochere over the entrance + a lit rooftop sign -->
+        <g fill="#1b1f23" stroke="rgba(220,228,230,0.22)" stroke-width="1.3">
+          <rect x="466" y="532" width="148" height="8" rx="2" />
+          <line x1="476" y1="540" x2="476" y2="560" />
+          <line x1="604" y1="540" x2="604" y2="560" />
+        </g>
+        <rect x="556" y="58" width="11" height="46" fill="#15181b" stroke="rgba(220,228,230,0.2)" stroke-width="1" />
+        <rect class="lit-win" x="558.5" y="61" width="6" height="40" rx="1" fill="#4fc4cf" opacity="0.85" filter="url(#lit)" />
+        <text class="hero__hotelmark" x="540" y="524" text-anchor="middle"
+          fill="#4fc4cf" filter="url(#lit)"
+          font-family="var(--font-mono)" font-size="15" letter-spacing="5" font-weight="500">HOTEL</text>
+      </svg>
+    </div>
+
+    <div class="xray__lens"></div>
+    <div class="hero__scrim"></div>
+  </div>
+
+  <div class="container hero__inner">
+    <div class="hero__copy">
+      <p class="hero__kicker reveal">The smart operators don't guess. They measure.</p>
+
+      <h1 class="hero__title reveal" id="hero-title">
+        Your supermarket is
+        <span class="hero__title-accent">overpaying for energy.</span>
+      </h1>
+
+      <p class="hero__lede lede reveal">
+        We find exactly how much and prove it at your own meter, so you act on
+        what the meter shows, not what a vendor claims.
+      </p>
+
+      <div class="hero__actions reveal">
+        <CtaPair />
+      </div>
+
+      <ul class="hero__chips reveal" aria-label="What the pilot does not require">
+        <li>No capital at risk</li>
+        <li>No equipment torn out<Disc to="terms" /></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  (() => {
+    const hero = document.querySelector(".hero");
+    const scene = hero && hero.querySelector(".hero__scene");
+    if (!hero || !scene) return;
+    const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const devs = Array.from(scene.querySelectorAll(".dev"));
+    const NEAR = 135;
+
+    const showNow = () => {};
+    const setPos = (x, y) => {
+      scene.style.setProperty("--mx", x + "px");
+      scene.style.setProperty("--my", y + "px");
+      const b = scene.getBoundingClientRect();
+      if (b.width && b.height) {
+        scene.style.setProperty("--pcx", (x / b.width - 0.5).toFixed(3));
+        scene.style.setProperty("--pcy", (y / b.height - 0.5).toFixed(3));
+      }
+    };
+    const markNear = (x, y) => {
+      const box = scene.getBoundingClientRect();
+      for (const d of devs) {
+        const m = d.querySelector(".dev__glow") || d;
+        const b = m.getBoundingClientRect();
+        const hx = b.left + b.width / 2 - box.left;
+        const hy = b.top + b.height / 2 - box.top;
+        d.classList.toggle("is-near", Math.hypot(hx - x, hy - y) < NEAR);
+      }
+    };
+    const centerOf = (d) => {
+      const m = d.querySelector(".dev__glow") || d;
+      const b = m.getBoundingClientRect();
+      const box = scene.getBoundingClientRect();
+      return { x: b.left + b.width / 2 - box.left, y: b.top + b.height / 2 - box.top };
+    };
+    const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
+    // reduced motion: reveal the annotated blueprint, all waste counted
+    if (reduce) {
+      hero.classList.add("is-revealed");
+      return;
+    }
+
+    // fine pointer: smooth lens follow + a one-time self-demo on load
+    if (fine) {
+      let tx = 0, ty = 0, lx = 0, ly = 0, raf = 0, primed = false, demo = true;
+      function render() {
+        lx += (tx - lx) * 0.16;
+        ly += (ty - ly) * 0.16;
+        setPos(lx, ly); markNear(lx, ly);
+        if (Math.abs(tx - lx) > 0.5 || Math.abs(ty - ly) > 0.5) raf = requestAnimationFrame(render); else raf = 0;
+      }
+      hero.addEventListener("pointermove", (e) => {
+        demo = false;
+        const box = scene.getBoundingClientRect();
+        tx = e.clientX - box.left; ty = e.clientY - box.top;
+        if (!primed) { lx = tx; ly = ty; primed = true; }
+        hero.classList.add("is-live");
+        if (!raf) raf = requestAnimationFrame(render);
+      }, { passive: true });
+      hero.addEventListener("pointerleave", () => {
+        hero.classList.remove("is-live");
+        devs.forEach((d) => d.classList.remove("is-near"));
+        showNow(null);
+      });
+
+      // self-demo: sweep across three trouble spots, then hand control over
+      const demoPts = ["ahu", "chiller", "switch"]
+        .map((n) => scene.querySelector('.dev[data-dev="' + n + '"]')).filter(Boolean);
+      if (demoPts.length) {
+        let seg = 0, segStart = 0, phase = "hold", dstart = 0;
+        const TRAVEL = 1150, HOLD = 750;
+        hero.classList.add("is-live");
+        const demoStep = (ts) => {
+          if (!demo) { hero.classList.remove("is-live"); devs.forEach((d) => d.classList.remove("is-near")); return; }
+          const pts = demoPts.map(centerOf);
+          if (!dstart) { dstart = ts; segStart = ts; setPos(pts[0].x, pts[0].y); markNear(pts[0].x, pts[0].y); }
+          if (phase === "travel") {
+            const cur = pts[seg], nxt = pts[Math.min(seg + 1, pts.length - 1)];
+            const t = Math.min(1, (ts - segStart) / TRAVEL), e = ease(t);
+            const x = cur.x + (nxt.x - cur.x) * e, y = cur.y + (nxt.y - cur.y) * e;
+            setPos(x, y); markNear(x, y);
+            if (t >= 1) { seg++; phase = "hold"; segStart = ts; }
+          } else {
+            setPos(pts[seg].x, pts[seg].y); markNear(pts[seg].x, pts[seg].y);
+            if (ts - segStart >= HOLD) {
+              if (seg >= pts.length - 1) { demo = false; hero.classList.remove("is-live"); devs.forEach((d) => d.classList.remove("is-near")); showNow(null); return; }
+              phase = "travel"; segStart = ts;
+            }
+          }
+          requestAnimationFrame(demoStep);
+        };
+        requestAnimationFrame(demoStep);
+      }
+      return;
+    }
+
+    // touch / coarse: auto-tour every trouble spot on a loop
+    const order = ["ahu", "fridge", "switch", "pump", "boiler", "chiller", "laundry"]
+      .map((n) => scene.querySelector('.dev[data-dev="' + n + '"]')).filter(Boolean);
+    if (!order.length) return;
+    const TRAVEL = 1700, HOLD = 1300;
+    let oi = 0, phase = "hold", tstart = 0, from = null, to = null, started = false;
+    hero.classList.add("is-auto", "is-live");
+    function tour(ts) {
+      if (!started) { to = centerOf(order[0]); from = { x: to.x, y: to.y }; setPos(to.x, to.y); markNear(to.x, to.y); tstart = ts; started = true; }
+      if (phase === "travel") {
+        const t = Math.min(1, (ts - tstart) / TRAVEL), e = ease(t);
+        setPos(from.x + (to.x - from.x) * e, from.y + (to.y - from.y) * e);
+        markNear(from.x + (to.x - from.x) * e, from.y + (to.y - from.y) * e);
+        if (t >= 1) { phase = "hold"; tstart = ts; }
+      } else {
+        setPos(to.x, to.y); markNear(to.x, to.y);
+        if (ts - tstart >= HOLD) { oi = (oi + 1) % order.length; from = { x: to.x, y: to.y }; to = centerOf(order[oi]); phase = "travel"; tstart = ts; }
+      }
+      requestAnimationFrame(tour);
+    }
+    requestAnimationFrame(tour);
+  })();
+</script>
+
+<style>
+  .hero {
+    position: relative; isolation: isolate; overflow: hidden;
+    /* capped so the CTA stays in the fold on tall/wide screens; the copy
+       sits just above center rather than dead-center, pushing the button up */
+    min-height: clamp(30rem, 78vh, 45rem);
+    display: flex; align-items: center;
+    background: var(--bg);
+    padding-block: clamp(2.5rem, 5vw, 4.5rem);
+    cursor: crosshair;
+  }
+  .hero :is(a, button) { cursor: pointer; }
+
+  .hero__scene { position: absolute; inset: 0; z-index: -1; --mx: 72%; --my: 46%; --lens-r: 170px; }
+  .xray__layer { position: absolute; inset: 0; }
+  .xray__layer svg { width: 100%; height: 100%; }
+  /* the blueprint sits deeper and parallaxes against the skin for real depth */
+  .xray__inner {
+    z-index: 1;
+    transform: translate(calc(var(--pcx, 0) * -18px), calc(var(--pcy, 0) * -12px));
+    transition: transform 0.35s var(--ease-out-quart);
+  }
+  .xray__skin {
+    z-index: 2;
+    -webkit-mask-image: radial-gradient(var(--lens-r) circle at var(--mx) var(--my), transparent 0 50%, #000 100%);
+    mask-image: radial-gradient(var(--lens-r) circle at var(--mx) var(--my), transparent 0 50%, #000 100%);
+  }
+  .xray__lens {
+    position: absolute; z-index: 3; top: 0; left: 0;
+    width: calc(var(--lens-r) * 2); height: calc(var(--lens-r) * 2);
+    margin: calc(var(--lens-r) * -1) 0 0 calc(var(--lens-r) * -1);
+    border-radius: 50%;
+    transform: translate(var(--mx), var(--my));
+    border: 1px solid color-mix(in srgb, var(--h-teal, #4fc4cf) 60%, transparent);
+    box-shadow:
+      inset 0 0 60px color-mix(in srgb, var(--h-teal, #4fc4cf) 18%, transparent),
+      inset 0 0 0 6px color-mix(in srgb, var(--h-red, #c87a64) 10%, transparent),
+      0 0 44px color-mix(in srgb, var(--h-teal, #4fc4cf) 20%, transparent);
+    -webkit-backdrop-filter: saturate(1.18) contrast(1.05);
+    backdrop-filter: saturate(1.18) contrast(1.05);
+    pointer-events: none; opacity: 0;
+    transition: opacity 0.45s var(--ease-out-quart);
+  }
+  /* a soft volumetric halo bleeds past the lens edge, like a torch cone */
+  .xray__lens::before {
+    content: ""; position: absolute; inset: -38%; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(circle, color-mix(in srgb, var(--h-teal, #4fc4cf) 15%, transparent), transparent 62%);
+  }
+  .hero.is-live .xray__lens { opacity: 1; }
+
+  .hero__scrim {
+    position: absolute; inset: 0; z-index: 4; pointer-events: none;
+    background:
+      linear-gradient(100deg, var(--bg) 0%, var(--bg) 24%, color-mix(in srgb, var(--bg) 70%, transparent) 44%, transparent 66%),
+      linear-gradient(0deg, var(--bg) 0%, transparent 24%);
+  }
+
+  .wires { stroke: var(--h-red, #ff5a3c); }
+  .lit-win { fill: var(--h-teal, #4fc4cf); }
+  .hero__hotelmark { font-family: var(--font-mono); fill: var(--h-teal, #4fc4cf); }
+  .wire { opacity: 0.34; }
+  .wire--main { stroke-width: 2.3; opacity: 0.5; }
+  .wire--run { stroke-width: 1.5; }
+  .wire--branch { stroke-width: 2.2; opacity: 0.62; }
+
+  .dev__glow { transform-box: fill-box; transform-origin: center; opacity: 0.6; }
+  .dev__body { fill: #15191d; stroke: rgba(220,228,230,0.5); stroke-width: 1.4; stroke-linejoin: round; }
+  .dev__hub { fill: var(--h-teal, #cfe9ec); }
+  .dev__blade { fill: var(--h-teal, #6fb6ba); }
+  .dev__vane { stroke: var(--h-teal, #cfe9ec); stroke-width: 1.6; stroke-linecap: round; }
+  .dev__gauge { stroke: rgba(220,228,230,0.45); stroke-width: 1.4; }
+  .dev__needle { stroke: #ff7a3c; stroke-width: 1.8; stroke-linecap: round; transform-box: fill-box; transform-origin: 100% 100%; }
+  .dev__arc { stroke: #cdeef0; stroke-width: 1.6; stroke-linecap: round; }
+  .dev__flame { fill: #ff8a4d; }
+  .dev__wisp { stroke: rgba(120,170,150,0.5); stroke-width: 1.4; fill: none; stroke-linecap: round; }
+  .dev__frost { stroke: rgba(150,205,225,0.75); stroke-width: 1.1; fill: none; stroke-linecap: round; }
+
+  .dev__tag { opacity: 0; transition: opacity 0.3s var(--ease-out-quart); }
+  .dev__tag text {
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.01em;
+    fill: var(--gold-text); paint-order: stroke; stroke: #0a0c0e; stroke-width: 4px; stroke-linejoin: round;
+  }
+  .dev.is-near .dev__tag { opacity: 1; }
+  .dev.is-near .dev__glow { opacity: 1; filter: drop-shadow(0 0 14px color-mix(in srgb, #ff8a4d 55%, transparent)); }
+  .dev.is-near .dev__body { stroke: #4fc4cf; }
+
+  /* HUD: the scanner's live readout — current device + running waste total */
+  .hero__hud {
+    position: absolute; z-index: 4;
+    top: clamp(1rem, 4vh, 2.2rem); right: clamp(1rem, 3vw, 2.4rem);
+    display: grid; gap: 0.55rem; justify-items: end; text-align: right;
+    pointer-events: none; font-family: var(--font-mono);
+  }
+  .hero__hud-now {
+    display: grid; gap: 0.12rem; justify-items: end;
+    padding: 0.5rem 0.75rem; border-radius: var(--radius-s);
+    border: 1px solid transparent;
+    opacity: 0; transform: translateY(-5px);
+    transition: opacity 0.3s ease, transform 0.3s var(--ease-out-quart);
+  }
+  .hero__hud-now.is-on {
+    opacity: 1; transform: none;
+    border-color: var(--line-strong);
+    background: color-mix(in srgb, var(--bg) 90%, transparent);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  }
+  .hero__hud-dev { font-size: var(--step--1); color: var(--ink); letter-spacing: 0.03em; }
+  .hero__hud-cost {
+    font-size: var(--step-1); color: var(--cost, #c87a64); font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+  .hero__hud-metric {
+    font-size: 0.62rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .hero__hud-total {
+    display: grid; gap: 0.12rem; justify-items: end;
+    padding: 0.6rem 0.85rem; border: 1px solid var(--line-strong);
+    border-radius: var(--radius-s);
+    background: color-mix(in srgb, var(--bg) 90%, transparent);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    box-shadow: 0 18px 40px -28px rgba(0, 0, 0, 0.85);
+  }
+  .hero__hud-label {
+    font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+  }
+  /* waste reads red, never teal: teal is reserved for verified savings */
+  .hero__hud-val {
+    font-size: var(--step-2); color: var(--cost, #c87a64);
+    font-variant-numeric: tabular-nums; letter-spacing: -0.01em; line-height: 1;
+  }
+  .hero__hud-mo { font-size: 0.42em; color: var(--muted); margin-left: 0.15em; }
+  .hero__hud-note { font-size: 0.56rem; color: var(--muted); letter-spacing: 0.03em; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .wire { stroke-dasharray: 22 7; animation: flow 1.5s linear infinite; animation-delay: var(--d, 0s); }
+    .wire--branch { animation-duration: 1s; }
+    @keyframes flow { to { stroke-dashoffset: -29; } }
+    .dev__glow { animation: hotPulse 2.8s ease-in-out infinite; }
+    .dev[data-dev="switch"] .dev__glow { animation-duration: 3.4s; animation-delay: 0.5s; }
+    .dev[data-dev="chiller"] .dev__glow { animation-duration: 3s; animation-delay: 0.9s; }
+    .dev[data-dev="laundry"] .dev__glow { animation-duration: 3.6s; animation-delay: 0.3s; }
+    .dev[data-dev="boiler"] .dev__glow { animation-duration: 3.1s; animation-delay: 0.7s; }
+    @keyframes hotPulse { 0%, 100% { opacity: 0.45; transform: scale(0.9); } 50% { opacity: 0.9; transform: scale(1.1); } }
+    .dev__spin { transform-box: fill-box; transform-origin: center; animation: spin var(--spin, 2.4s) linear infinite; }
+    .dev__spin--stutter { animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.3); }
+    .dev.is-near .dev__spin { animation-duration: calc(var(--spin, 2.4s) * 0.5); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .dev__arc { animation: arcFlicker 1.3s steps(1) infinite; }
+    @keyframes arcFlicker { 0%, 70%, 100% { opacity: 0; } 72%, 80% { opacity: 1; } 85% { opacity: 0.3; } 90% { opacity: 0.9; } }
+    .dev__needle { animation: needleTremble 0.9s ease-in-out infinite; }
+    @keyframes needleTremble { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-7deg); } }
+    .dev__flame { transform-box: fill-box; transform-origin: 50% 100%; animation: flame 0.4s ease-in-out infinite alternate; }
+    @keyframes flame { from { transform: scaleY(0.82) scaleX(1.05); opacity: 0.8; } to { transform: scaleY(1.12) scaleX(0.92); opacity: 1; } }
+    .dev__cycle { transform-box: fill-box; transform-origin: center; animation: shortCycle 3.4s ease-in-out infinite; }
+    @keyframes shortCycle { 0%, 38% { opacity: 1; } 50%, 70% { opacity: 0.35; } 82%, 100% { opacity: 1; } }
+    .dev__frost path { animation: twinkle 2.4s ease-in-out infinite; }
+    .dev__frost path:nth-child(2) { animation-delay: 1.1s; }
+    @keyframes twinkle { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+    .dev__wisp { animation: rise 2.2s ease-out infinite; }
+    .dev__wisp:nth-child(2) { animation-delay: 0.5s; }
+    .dev__wisp:nth-child(3) { animation-delay: 1s; }
+    @keyframes rise { 0% { opacity: 0; transform: translateY(4px); } 30% { opacity: 0.6; } 100% { opacity: 0; transform: translateY(-12px); } }
+    .hero__scene::after {
+      content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none;
+      background: linear-gradient(100deg, transparent 44%, rgba(200,235,240,0.16) 50%, transparent 56%);
+      background-size: 220% 100%;
+      animation: scanSweep 2.6s var(--ease-out-quart) 0.5s 1 both;
+    }
+    @keyframes scanSweep { from { background-position: 130% 0; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } to { background-position: -70% 0; opacity: 0; } }
+    /* directed entrance: the copy rises in a deliberate cascade over the
+       settling scanner (a cleaner rise than the global blur-up), then the
+       primary CTA's glow blooms once as it lands. */
+    .hero__copy .reveal {
+      filter: none;
+      transform: translateY(20px);
+      transition-duration: 0.9s;
+    }
+    .hero__kicker.reveal { transition-delay: 0.18s; }
+    .hero__title.reveal { transition-delay: 0.36s; }
+    .hero__lede.reveal { transition-delay: 0.6s; }
+    .hero__actions.reveal { transition-delay: 0.78s; }
+    .hero__chips.reveal { transition-delay: 0.96s; }
+    .hero__actions.reveal.is-in .js-book-toggle {
+      animation: heroCtaBloom 1.8s var(--ease-out-quart) 1.05s 1;
+    }
+    @keyframes heroCtaBloom {
+      0% { box-shadow: 0 0 0 0 transparent; }
+      40% { box-shadow: 0 0 34px -2px var(--gold-glow); }
+      100% { box-shadow: 0 0 0 0 transparent; }
+    }
+  }
+
+  /* reduced-motion poster: a static annotated blueprint, waste already counted */
+  .hero.is-revealed .xray__skin { -webkit-mask-image: none; mask-image: none; opacity: 0.16; }
+  .hero.is-revealed .xray__inner { transform: none; }
+  .hero.is-revealed .xray__lens { display: none; }
+  .hero.is-revealed .dev__tag { opacity: 1; }
+  .hero.is-revealed .dev__glow { opacity: 0.85; }
+  .hero.is-revealed .hero__hud-now { display: none; }
+
+  @media (hover: none), (pointer: coarse) {
+    .hero { cursor: default; }
+    .hero__scene::after { display: none; }
+    .hero:not(.is-auto) .xray__skin { -webkit-mask-image: none; mask-image: none; opacity: 0.22; }
+    .hero:not(.is-auto) .xray__lens { display: none; }
+    .hero:not(.is-auto) .dev__tag { opacity: 1; }
+    .hero:not(.is-auto) .dev__glow { opacity: 1; }
+  }
+
+  .hero__inner { position: relative; z-index: 5; width: 100%; }
+  .hero__copy { max-width: 34rem; }
+  .hero__kicker {
+    font-family: var(--font-mono); font-size: var(--step--1);
+    letter-spacing: 0.13em; text-transform: uppercase; color: var(--gold-text);
+    margin-bottom: var(--space-m);
+  }
+  .hero__title { font-size: var(--step-5); line-height: 1.04; letter-spacing: -0.025em; max-width: 16ch; }
+  .hero__title-accent { color: var(--body); font-style: italic; font-weight: 400; }
+  .hero__lede { margin-top: var(--space-l); max-width: 50ch; }
+  .hero__actions { margin-top: var(--space-l); }
+  .hero__chips {
+    margin-top: var(--space-m); padding: 0; list-style: none;
+    display: flex; flex-wrap: wrap; gap: 0.5rem 1.4rem;
+  }
+  .hero__chips li {
+    display: inline-flex; align-items: center; gap: 0.5em;
+    font-family: var(--font-mono); font-size: var(--step--1);
+    letter-spacing: 0.03em; color: var(--muted);
+  }
+  .hero__chips li::before {
+    content: "\2713"; color: var(--mint); font-weight: 700;
+  }
+
+  /* text-founder panel styles now live in CtaPair.astro */
+  /* mobile-only static waste readout (desktop uses the live HUD instead) */
+  .hero__waste-m { display: none; }
+
+  @media (max-width: 52rem) {
+    /* keep the scanner as a full-bleed background behind the copy, same as
+       desktop. There's no cursor on touch, so the auto-tour loop (see the
+       script's coarse-pointer branch) sweeps the lens from one piece of
+       equipment to the next; the lens is shrunk to suit the smaller screen. */
+    .hero__title { font-size: var(--step-3); }
+    .hero__lede { margin-top: var(--space-m); }
+    .hero__scene { --mx: 52%; --my: 54%; --lens-r: 84px; }
+    /* back the chips so they never wash out over the scene */
+    .hero__chips li {
+      background: color-mix(in srgb, var(--bg) 72%, transparent);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.32em 0.7em;
+      -webkit-backdrop-filter: blur(3px);
+      backdrop-filter: blur(3px);
+    }
+  }
+</style>

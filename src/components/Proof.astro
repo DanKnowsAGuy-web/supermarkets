@@ -1,0 +1,559 @@
+---
+// Verified case studies, drawn from the published field record and source
+// one-pagers. One canonical card format; 3 visible on desktop, 1 on mobile;
+// infinite carousel. Figures shown floor-first, units always labeled (kWh
+// energy vs kW demand matters). Three savings TYPES, never blended into one
+// headline; the set is ordered to alternate them as you scroll:
+//   harm  = Energy harmonization alone   (power quality / harmonic distortion)
+//   hvac  = HVAC efficiency alone         (refrigerant-side coil restoration)
+//   whole = Whole-building program        (multiple measures stacked together)
+// The five harmonization cases are the originals; HVAC and whole-building
+// cases are interleaved between them.
+import Disc from "./Disc.astro";
+const cats = {
+  harm: { label: "Energy harmonization alone" },
+  hvac: { label: "HVAC efficiency alone" },
+  whole: { label: "Whole-building program" },
+};
+// Order: the four whole-building programs lead, then the single-measure cases
+// alternate harmonization <-> HVAC efficiency. Every figure counts up (ranges
+// animate both ends; the bottling figure carries a "+" prefix).
+const cases = [
+  {
+    cat: "whole",
+    type: "Auto Dealership",
+    place: "Arizona",
+    name: ["AZ Ford", "Dealership"],
+    fval: "49.2", num: 49.2, dec: 1, funit: "%",
+    unit: "annual energy cut, full-stack program",
+    scope: "power quality + HVAC + lighting · 1.06M kWh/yr · 25-mo payback",
+    verifier: "Documented project total",
+  },
+  {
+    cat: "whole",
+    type: "Hospital",
+    place: "Naperville, IL",
+    name: ["Edward", "Hospital"],
+    fval: "24", num: 24, dec: 0, funit: "%",
+    unit: "kWh reduction over 9 months, whole facility",
+    scope: "power factor + voltage conditioning + line reactors · $84,270 saved",
+    verifier: "Metered; both phases beat projection",
+  },
+  {
+    cat: "whole",
+    type: "Manufacturing",
+    place: "Upper Midwest",
+    name: ["Commercial", "Bottling Plant"],
+    fval: "+50", num: 50, dec: 0, pre: "+", funit: "%",
+    unit: "more output, with energy cost up only 2%",
+    scope: "8-hour to 12-hour production day · Sta'bl-POWER total-systems · weighted for hours and weather",
+    verifier: "Growth-adjusted net cost study",
+  },
+  {
+    cat: "whole",
+    type: "Municipal",
+    place: "Rainsville, AL",
+    name: ["City of", "Rainsville"],
+    fval: "27", num: 27, dec: 0, funit: "%",
+    unit: "average reduction across city facilities, year one",
+    scope: "power conditioning + LED retrofit · facilities-wide",
+    verifier: "First-year monitored",
+  },
+  {
+    cat: "harm",
+    type: "Hospitality",
+    place: "Marietta, GA",
+    name: ["Hilton Garden Inn,", "Atlanta"],
+    fval: "13.51", num: 13.51, dec: 2, funit: "%",
+    unit: "kWh reduction at the meter, 12 months",
+    scope: "123 rooms · 11 devices across 28 panels",
+    verifier: "Verified by ABRAXAS",
+  },
+  {
+    cat: "hvac",
+    type: "Hospitality",
+    place: "Chantilly, VA",
+    name: ["Westfields Marriott,", "Washington Dulles"],
+    fval: "13.26", num: 13.26, dec: 2, funit: "%",
+    unit: "facility kWh reduction, refrigerant-side coil treatment",
+    scope: "5 RTUs + 190-ton chiller · 18-month pilot",
+    verifier: "Verified by Dominion Energy + TRC",
+  },
+  {
+    cat: "harm",
+    type: "Hotel & Resort",
+    place: "Orange Beach, AL",
+    name: ["Caribe", "Resort"],
+    fval: "14", num: 14, dec: 0, funit: "%", mod: "+",
+    unit: "kWh reduction, monthly average over 12 months",
+    scope: "3 buildings · paid for itself in the first year",
+    verifier: "Verified by CHI Energy",
+  },
+  {
+    cat: "hvac",
+    type: "Retail",
+    place: "Elizabeth, NJ",
+    name: ["Simon Property Gr.", "Jersey Gardens"],
+    fval: "21.1", num: 21.1, dec: 1, funit: "%",
+    unit: "kWh reduction, refrigerant-side efficiency",
+    scope: "mall HVAC · $41,473/yr · 12-month payback",
+    verifier: "IPMVP third-party M&V",
+  },
+  {
+    cat: "harm",
+    type: "Office + Warehouse",
+    place: "Atlanta, GA",
+    name: ["Corey", "Center"],
+    fval: "14.8", num: 14.8, dec: 1, funit: "%",
+    unit: "kWh reduction, four-year average",
+    scope: "35,000 sq ft · 8 devices, one per panel",
+    verifier: "Verified by Noesis",
+  },
+  {
+    cat: "hvac",
+    type: "Distribution",
+    place: "Gulfport, MS",
+    name: ["Anheuser-Busch,", "Mitchell Distributing"],
+    fval: "19.2", num: 19.2, dec: 1, funit: "%",
+    unit: "RTU energy reduction, refrigerant-side treatment",
+    scope: "HVAC + refrigeration · 20-month payback",
+    verifier: "Verified on the meter and bill",
+  },
+  {
+    cat: "harm",
+    type: "Hospitality",
+    place: "Las Vegas, NV",
+    name: ["Southpoint", "Hotel & Casino"],
+    fval: "8.59", num: 8.59, dec: 2, funit: "%",
+    unit: "kW demand reduction, metered panels",
+    scope: "arena lighting + receptacle panels, 45-day baseline",
+    verifier: "Third-party meter data",
+  },
+  {
+    cat: "hvac",
+    type: "Logistics",
+    place: "United States",
+    name: ["DHL", "Refrigeration Plant"],
+    fval: "15", num: 15, dec: 0, funit: "%",
+    unit: "compressor efficiency gain, ammonia system",
+    scope: "ammonia refrigeration · 13.8-month payback",
+    verifier: "Compressor efficiency study",
+  },
+  {
+    cat: "harm",
+    type: "Office (historic)",
+    place: "Birmingham, AL",
+    name: ["The Massey", "Building"],
+    range: [9, 19], funit: "%",
+    unit: "kWh reduction, metered floor by floor",
+    scope: "10 floors · 10 devices, one per floor",
+    verifier: "Metered impact evaluation",
+  },
+];
+---
+
+<section class="section proof" id="proof" aria-labelledby="proof-title">
+  <div class="container">
+    <div class="proof__head reveal">
+      <h2 class="proof__title reveal" id="proof-title" data-words>
+        Proof, not promises.
+      </h2>
+      <p class="proof__lede lede">
+        The scene above isn't hypothetical. Here is the distortion lever,
+        measured in the field by independent analysts, floor numbers first.<Disc to="results" />
+      </p>
+    </div>
+
+    <a
+      class="proof__record instrument-frame reveal"
+      href="https://bit.ly/verified-results"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="View the full record of 200-plus measured results, opens in a new tab"
+    >
+      <span class="proof__record-stat">200+ measured results</span>
+      <span class="proof__record-meta">11 countries · 6 continents · multiple utility companies</span>
+      <span class="proof__record-go">View the record
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h13M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </span>
+    </a>
+
+    <div class="proof__carousel reveal" style="--i: 1">
+      <button class="proof__arrow" id="proof-prev" type="button" aria-label="Previous case study">&larr;</button>
+      <div class="proof__viewport" id="proof-viewport">
+        <div class="proof__track" id="proof-track">
+          {
+            cases.map((c) => (
+              <article class={`case case--${c.cat}`}>
+                <p class="case__banner">{cats[c.cat].label}</p>
+                <p class="case__type">{c.type}</p>
+                <p class="case__place">{c.place}</p>
+                <h3 class="case__name">{c.name[0]}<br />{c.name[1]}</h3>
+                <p class="case__figure fig">
+                  {c.range ? (
+                    <Fragment>
+                      <span class="fig__val" data-countup={c.range[0]} data-decimals="0" data-suffix="">{c.range[0]}</span>
+                      <span class="fig__dash">–</span>
+                      <span class="fig__val" data-countup={c.range[1]} data-decimals="0" data-suffix="">{c.range[1]}</span>
+                    </Fragment>
+                  ) : (
+                    <span class="fig__val" data-countup={c.num} data-decimals={c.dec} data-prefix={c.pre || ""} data-suffix="">{c.fval}</span>
+                  )}
+                  {c.funit && <span class="fig__unit">{c.funit}</span>}
+                  {c.mod && <span class="fig__mod">{c.mod}</span>}
+                </p>
+                <p class="case__unit">{c.unit}</p>
+                <p class="case__scope">{c.scope}</p>
+                <p class="case__verifier">{c.verifier}</p>
+                <p class="case__chip">Full documentation available upon request</p>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+      <button class="proof__arrow" id="proof-next" type="button" aria-label="Next case study">&rarr;</button>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  (() => {
+    const track = document.getElementById("proof-track");
+    if (!track) return;
+    const viewport = document.getElementById("proof-viewport");
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const originals = Array.from(track.children);
+    const n = originals.length;
+    // clone both ends so the loop is seamless
+    originals.forEach((c) => track.appendChild(c.cloneNode(true)));
+    originals.forEach((c) => track.insertBefore(c.cloneNode(true), track.firstChild));
+    let idx = n; // start on the first real card
+    let animating = false;
+
+    const cardStep = () => track.children[0].getBoundingClientRect().width +
+      parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap || 0);
+
+    const go = (target, instant) => {
+      track.style.transition = instant || reduce ? "none" : "transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)";
+      track.style.transform = "translateX(" + (-target * cardStep()).toFixed(1) + "px)";
+    };
+
+    const step = (dir) => {
+      if (animating) return;
+      animating = true;
+      idx += dir;
+      go(idx, false);
+      setTimeout(() => {
+        if (idx >= n * 2) { idx -= n; go(idx, true); }
+        if (idx < n) { idx += n; go(idx, true); }
+        animating = false;
+      }, reduce ? 30 : 520);
+    };
+
+    document.getElementById("proof-prev").addEventListener("click", () => step(-1));
+    document.getElementById("proof-next").addEventListener("click", () => step(1));
+    addEventListener("resize", () => go(idx, true), { passive: true });
+
+    // auto-advance one card every 3s, but hold off until the carousel has
+    // scrolled up to the vertical midpoint of the viewport, so it doesn't burn
+    // through cards while still below the fold. Readers can stop it by hovering
+    // or tabbing in; it idles while the tab is hidden or scrolled away, and is
+    // off when motion is reduced.
+    const carousel = document.querySelector(".proof__carousel");
+    let timer = 0;
+    let inView = false;
+    let hovering = false;
+    const AUTO = 3000;
+    const start = () => {
+      if (reduce || timer || document.hidden || !inView || hovering) return;
+      timer = setInterval(() => step(1), AUTO);
+    };
+    const halt = () => { if (timer) { clearInterval(timer); timer = 0; } };
+    viewport.addEventListener("mouseenter", () => { hovering = true; halt(); });
+    viewport.addEventListener("mouseleave", () => { hovering = false; start(); });
+    carousel.addEventListener("focusin", halt);
+    carousel.addEventListener("focusout", (e) => { if (!carousel.contains(e.relatedTarget)) start(); });
+    document.addEventListener("visibilitychange", () => { document.hidden ? halt() : start(); });
+
+    // gate: the top of the carousel reaching the screen's vertical middle turns
+    // auto-advance on; leaving that zone turns it back off. The bottom -50%
+    // root margin puts the trigger line at the viewport's vertical center.
+    new IntersectionObserver((entries) => {
+      inView = entries[0].isIntersecting;
+      inView ? start() : halt();
+    }, { rootMargin: "0px 0px -50% 0px", threshold: 0 }).observe(carousel);
+
+    go(idx, true);
+  })();
+</script>
+
+<style>
+  .proof {
+    border-top: 1px solid var(--line);
+    background: var(--bg);
+  }
+  .proof__head {
+    max-width: 54rem;
+  }
+  .proof__title {
+    margin-top: var(--space-xs);
+    font-size: var(--step-3);
+    max-width: 18ch;
+  }
+  .proof__lede {
+    margin-top: var(--space-m);
+  }
+
+  /* link to the full field record above the cards */
+  /* a centered, button-like card: stat / meta / a pill CTA, stacked */
+  .proof__record {
+    margin: var(--space-l) auto 0;
+    max-width: 30rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.3rem;
+    padding: 1.4rem 1.75rem 1.5rem;
+    border: 1px solid color-mix(in srgb, var(--gold-text) 30%, transparent);
+    border-radius: var(--radius);
+    background: color-mix(in srgb, var(--gold-text) 5%, transparent);
+    text-decoration: none;
+    color: var(--ink);
+    transition: border-color 0.25s ease, background 0.25s ease,
+      box-shadow 0.25s ease, transform 0.25s var(--ease-out-quart);
+  }
+  .proof__record:hover {
+    border-color: var(--gold-text);
+    background: color-mix(in srgb, var(--gold-text) 9%, transparent);
+    box-shadow: 0 16px 40px -26px color-mix(in srgb, var(--gold-text) 60%, transparent);
+    transform: translateY(-2px);
+  }
+  .proof__record:focus-visible {
+    outline: 2px solid var(--gold-text);
+    outline-offset: 3px;
+  }
+  .proof__record-stat {
+    font-family: var(--font-serif);
+    font-size: var(--step-2);
+    font-weight: 600;
+    color: var(--gold-text);
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+  }
+  .proof__record-meta {
+    font-size: var(--step--1);
+    color: var(--body);
+  }
+  /* line 3 reads as a real button */
+  .proof__record-go {
+    margin-top: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold-text);
+    white-space: nowrap;
+    padding: 0.6em 1.2em;
+    border: 1px solid color-mix(in srgb, var(--gold-text) 50%, transparent);
+    border-radius: 999px;
+    transition: background 0.25s ease, border-color 0.25s ease;
+  }
+  .proof__record:hover .proof__record-go {
+    background: color-mix(in srgb, var(--gold-text) 14%, transparent);
+    border-color: var(--gold-text);
+  }
+  .proof__record-go svg {
+    width: 1.05em;
+    height: 1.05em;
+    transition: transform 0.25s var(--ease-out-quart);
+  }
+  .proof__record:hover .proof__record-go svg {
+    transform: translateX(3px);
+  }
+
+  .proof__carousel {
+    margin-top: var(--space-xl);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: clamp(0.6rem, 2vw, 1.25rem);
+  }
+  .proof__viewport {
+    overflow: hidden;
+  }
+  .proof__track {
+    display: flex;
+    gap: clamp(1rem, 2.5vw, 1.5rem);
+    will-change: transform;
+  }
+  .case {
+    --case-pad: clamp(1.25rem, 3vw, 1.75rem);
+    --cat-color: var(--gold-text);
+    flex: 0 0 calc((100% - 2 * clamp(1rem, 2.5vw, 1.5rem)) / 3);
+    padding: var(--case-pad);
+    background: var(--surface);
+    border: 1px solid color-mix(in srgb, var(--cat-color) 32%, transparent);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.3s var(--ease-out-quart), border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .case:hover {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--cat-color) 60%, transparent);
+    box-shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.6);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .case { transition: none; }
+    .case:hover { transform: none; }
+  }
+  /* Three savings types, one accent each: teal = harmonization, copper = HVAC
+     efficiency, ink = the combined whole-building program. Token-driven so
+     they stay legible on the light "paper" insert this section sits in. */
+  .case--harm { --cat-color: var(--gold-text); }
+  .case--hvac { --cat-color: var(--cost); }
+  .case--whole { --cat-color: var(--ink); }
+
+  .case__banner {
+    margin: calc(-1 * var(--case-pad)) calc(-1 * var(--case-pad)) var(--space-m);
+    padding: 0.72rem var(--case-pad);
+    background: color-mix(in srgb, var(--cat-color) 16%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--cat-color) 40%, transparent);
+    color: var(--cat-color);
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  @media (max-width: 980px) {
+    .case {
+      flex-basis: calc((100% - clamp(1rem, 2.5vw, 1.5rem)) / 2);
+    }
+  }
+  @media (max-width: 640px) {
+    .case {
+      flex-basis: 100%;
+    }
+    /* reclaim the horizontal space the flanking arrows were eating: the
+       viewport spans the full row so each card is much wider, and the arrows
+       drop to a centered row beneath it */
+    .proof__carousel {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: var(--space-s);
+    }
+    .proof__viewport { flex: 0 0 100%; order: 0; }
+    .proof__arrow { order: 1; }
+  }
+
+  .case__type {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--cat-color);
+    line-height: 1.3;
+  }
+  .case__place {
+    margin-top: 0.15rem;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    line-height: 1.3;
+    min-height: 1.3em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .case__name {
+    margin-top: var(--space-s);
+    font-size: var(--step-1);
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    /* every name is authored as exactly two lines (see the name arrays), so
+       the figure / unit / scope rows line up across all cards */
+    height: 2.4em;
+    white-space: nowrap;
+  }
+  .case__figure {
+    margin-top: var(--space-m);
+    font-family: var(--font-serif);
+    font-size: clamp(2.4rem, 4.5vw, 3.2rem);
+    line-height: 1;
+    color: var(--cat-color);
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .case__unit {
+    margin-top: 0.35rem;
+    font-size: var(--step--1);
+    color: var(--body);
+    line-height: 1.4;
+    min-height: 2.8em; /* reserve two lines */
+  }
+  .case__scope {
+    margin-top: var(--space-s);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    line-height: 1.5;
+    min-height: 4.5em; /* reserve three lines */
+  }
+  .case__verifier {
+    margin-top: var(--space-m);
+    padding-top: var(--space-s);
+    border-top: 1px solid var(--line);
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--mint);
+    line-height: 1.4;
+    min-height: 2.8em; /* reserve two lines */
+  }
+  .case__chip {
+    margin-top: var(--space-s);
+    align-self: flex-start;
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 0.32em 0.8em;
+  }
+
+  .proof__arrow {
+    appearance: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--line-strong);
+    background: transparent;
+    color: var(--gold-text);
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: border-color 0.25s ease, background 0.25s ease, transform 0.3s var(--ease-out-quart);
+  }
+  .proof__arrow:hover {
+    border-color: var(--gold);
+    background: color-mix(in srgb, var(--gold) 10%, transparent);
+    transform: translateY(-1px);
+  }
+  .proof__arrow:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+  }
+</style>

@@ -1,0 +1,111 @@
+---
+// Verified-floor showcase: one oversized confident number with a signal glow,
+// blueprint callouts (leader lines + mono annotations) naming how it's
+// measured, and a calibration rule. Everything is visible by default; the
+// draw-in + count-up are enhancements only. Token-driven.
+const ticks = Array.from({ length: 31 }, (_, i) => 40 + i * 24);
+const calls = [
+  { y: 96, dx: 300, label: "Measured at the service entrance" },
+  { y: 150, dx: 312, label: "Weather + occupancy normalized" },
+  { y: 204, dx: 296, label: "Conservative floor, may be higher" },
+];
+---
+
+<section class="section fs" aria-labelledby="fs-title">
+  <div class="container">
+    <h2 class="fs__title visually-hidden" id="fs-title">Your verified savings floor</h2>
+    <figure class="fs__fig">
+      <svg viewBox="0 0 820 300" role="img"
+        aria-label="Verified savings floor: 20 percent off your total energy bill, measured at the service entrance, weather and occupancy normalized, the conservative floor.">
+        <defs>
+          <filter id="fs-glow" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="7" result="b" />
+            <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+        </defs>
+
+        <g class="fs__rule">
+          <line class="fs__rule-base" x1="40" y1="30" x2="784" y2="30" />
+          {ticks.map((x, i) => (<line class="fs__tick" x1={x} y1="30" x2={x} y2={i % 5 === 0 ? 44 : 37} />))}
+        </g>
+
+        <text class="fs__num" data-countup="20" x="38" y="216">20%</text>
+        <text class="fs__unit" x="42" y="250">off your total energy bill</text>
+
+        {calls.map((c) => (
+          <g class="fs__call">
+            <circle class="fs__dot" cx={c.dx} cy={c.y} r="3" />
+            <path class="fs__lead" d={`M${c.dx} ${c.y} H466`} />
+            <text class="fs__label" x="476" y={c.y + 4}>{c.label}</text>
+          </g>
+        ))}
+      </svg>
+    </figure>
+  </div>
+</section>
+
+<script is:inline>
+  (() => {
+    const sec = document.querySelector(".fs");
+    if (!sec) return;
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    new IntersectionObserver((entries, obs) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) { sec.classList.add("is-in"); obs.disconnect(); }
+      });
+    }, { threshold: 0.35 }).observe(sec);
+  })();
+</script>
+
+<style>
+  .fs { border-top: 1px solid var(--line); background: var(--bg); }
+  .fs__fig { margin: 0; }
+  .fs__fig svg { width: 100%; height: auto; max-height: 44vh; display: block; }
+
+  .fs__rule-base { stroke: var(--line-strong); stroke-width: 1; }
+  .fs__tick { stroke: var(--muted); stroke-width: 1.1; }
+
+  .fs__num {
+    font-family: var(--font-serif);
+    font-size: 138px;
+    letter-spacing: -0.03em;
+    fill: var(--gold-text);
+    font-variant-numeric: tabular-nums;
+    filter: url(#fs-glow);
+  }
+  .fs__unit {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    fill: var(--muted);
+  }
+
+  /* callouts: visible by default */
+  .fs__dot { fill: var(--gold-text); }
+  .fs__lead {
+    stroke: var(--gold-text); stroke-width: 1.4; fill: none;
+    stroke-dasharray: 240; stroke-dashoffset: 0;
+  }
+  .fs__label {
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    letter-spacing: 0.02em;
+    fill: var(--ink);
+  }
+
+  /* enhancement only: replay a draw-in when scrolled into view */
+  @media (prefers-reduced-motion: no-preference) {
+    .fs.is-in .fs__lead { animation: fsDraw 0.8s var(--ease-out-quart) both; }
+    @keyframes fsDraw { from { stroke-dashoffset: 240; } to { stroke-dashoffset: 0; } }
+    .fs.is-in .fs__call:nth-of-type(2) .fs__lead { animation-delay: 0.12s; }
+    .fs.is-in .fs__call:nth-of-type(3) .fs__lead { animation-delay: 0.24s; }
+    .fs__num { animation: fsGlow 4s ease-in-out infinite; }
+    @keyframes fsGlow { 0%, 100% { opacity: 0.94; } 50% { opacity: 1; } }
+  }
+
+  @media (max-width: 640px) {
+    .fs__num { font-size: 104px; }
+    .fs__label { font-size: 11.5px; }
+  }
+</style>

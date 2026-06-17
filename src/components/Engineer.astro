@@ -1,0 +1,502 @@
+---
+// "Meet the Engineer" — Cliff Suljak credibility section (built to spec).
+// Self-contained: local color vars on the section, Playfair Display + Inter,
+// a trusted-by marquee, and a JS-driven rotating project carousel.
+// NOTE: copy uses commas/colons in place of em dashes (brand rule: no em
+// dashes, no literal "--").
+import cliff from "../assets/cliff.jpeg";
+import CtaPair from "./CtaPair.astro";
+
+const tiles = [
+  { fig: "Sole source", desc: "22-person team across four DOE/DOD facilities, Sandia National Laboratories" },
+  { fig: "$600M+", desc: "in projects at the Salt River Project", num: 600, prefix: "$", suffix: "M+" },
+  { fig: "ASTM", desc: "co-wrote the national standards other engineers are tested against" },
+  { fig: "UAE Grid", desc: "consulted Dubai, Abu Dhabi, and Sharjah on national grid reliability" },
+];
+
+const trusted = [
+  "Sandia National Laboratories (Department of Energy and Department of Defense)",
+  "Salt River Project",
+  "ASTM",
+  "American Energy Associates",
+  "Blackstone Oil and Gas",
+  "York International",
+  "Los Angeles County",
+  "Dubai",
+  "GlobalVest",
+  "Abu Dhabi",
+];
+
+const cards = [
+  {
+    tag: "Sandia National Laboratories · DOE / DOD",
+    head: "Sole-source. Five years. Twenty-two engineers. Four national facilities.",
+    body: "Sandia didn't put this contract out to bid. They awarded it directly to Cliff, then watched him assemble and direct a 22-person engineering team across facilities in Albuquerque, Livermore, Tonopah, and Kauai. Hundreds of task orders completed under Star Wars Program infrastructure. When the DOE and DOD need structural integrity assured, they don't shop around.",
+  },
+  {
+    tag: "Salt River Project · Arizona",
+    head: "He built the quality control system from scratch. The industry copied it.",
+    body: "As Manager of the Materials and Quality Services Division, Cliff created a complete quality control infrastructure for one of the Southwest's largest utility companies: metallurgical lab, nondestructive testing, failure analysis, predictive vibration monitoring. The innovations he introduced on projects exceeding $600M were later adopted by utilities across the country. He didn't follow best practice. He wrote it.",
+  },
+  {
+    tag: "York International · Los Angeles County Courts",
+    head: "Northridge earthquake. County engineers on the other side. He won.",
+    body: "After the Northridge earthquake threatened the world's largest thermal storage system at the LA County Courts facility, York International hired Cliff on a sole-source basis to fix it. He performed seismic stability analysis and delivered litigation testimony against the county's own engineers and consultants, and prevailed. Then he designed, fabricated, and personally oversaw installation of the custom seismic restraint system. Problem found, fought, and solved.",
+  },
+  {
+    tag: "UAE National Power Grid · Dubai · Abu Dhabi · Sharjah",
+    head: "Three emirates. One grid. They called him in to assess all of it.",
+    body: "What began as a reactive power loss engagement across Dubai, Abu Dhabi, and Sharjah grew into a full operational assessment of the UAE's entire power grid. Cliff mobilized in-country for extended periods, consulting directly to utility authorities on sustainability measures and grid reliability. When a nation's infrastructure is the project, the margin for error is zero.",
+  },
+  {
+    tag: "ASTM · Standards Committee · 8 Years",
+    head: "He didn't just pass the standard. He helped write it.",
+    body: "For eight years Cliff served on the ASTM committee developing test methods for leading-edge materials science diagnostic equipment: advanced composite and ultra-high-strength metals in extreme temperature environments. The methods he helped develop were adopted as national industry acceptance criteria for utility procurement. The standards that govern what other engineers do? He had a hand in those.",
+  },
+];
+---
+
+<section class="eng" id="procurement" aria-labelledby="eng-headline">
+  <div class="eng__wrap">
+    <div class="eng__trust">
+      <p class="eng__trust-label">Trusted by</p>
+      <div class="eng__marquee" id="eng-marquee">
+        <div class="eng__track">
+          {[...trusted, ...trusted].map((name) => (
+            <>
+              <span class="eng__m-item">{name}</span>
+              <span class="eng__m-sep" aria-hidden="true">·</span>
+            </>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <div class="eng__grid">
+      <div class="eng__photo-col">
+        <figure class="eng__photo">
+          <img class="bio-photo" src={cliff.src} alt="Cliff Suljak, Chief Engineer" loading="lazy" />
+        </figure>
+        <p class="eng__name">Cliff Suljak</p>
+        <p class="eng__role">Chief Engineer</p>
+      </div>
+
+      <div class="eng__content">
+        <h2 class="eng__headline" id="eng-headline">
+          Nobody wasted a capital budget on his watch.
+        </h2>
+        <p class="eng__lead">
+          For four decades, the institutions that couldn't afford a wrong
+          decision brought Cliff in first. Now he runs the same exam on your
+          building, on your behalf, not the vendor's.
+        </p>
+
+        <div class="eng__tiles">
+          {tiles.map((t, i) => (
+            <div class="eng__tile reveal" style={`--i: ${i}`}>
+              <span class="eng__tile-fig" data-countup={t.num} data-prefix={t.prefix} data-suffix={t.suffix}>{t.fig}</span>
+              <span class="eng__tile-desc">{t.desc}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <div class="eng__seam" aria-hidden="true">
+      <span class="eng__seam-label">Selected work</span>
+    </div>
+
+    <div class="eng__cards">
+      <div class="eng__cardtrack" id="eng-track">
+        {cards.map((c) => (
+          <article class="eng__card">
+            <p class="eng__card-tag">{c.tag}</p>
+            <h3 class="eng__card-head">{c.head}</h3>
+            <p class="eng__card-body">{c.body}</p>
+          </article>
+        ))}
+      </div>
+      <button class="eng__arrow eng__arrow--prev" id="eng-prev" type="button" aria-label="Previous project">&larr;</button>
+      <button class="eng__arrow eng__arrow--next" id="eng-next" type="button" aria-label="Next project">&rarr;</button>
+    </div>
+
+    <div class="eng__dots" id="eng-dots">
+      {cards.map((_, i) => (
+        <button class="eng__dot" type="button" data-i={i} aria-label={`Go to project ${i + 1}`}></button>
+      ))}
+    </div>
+
+    <div class="eng__cta">
+      <CtaPair />
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  (() => {
+    const root = document.querySelector(".eng");
+    if (!root) return;
+    const track = root.querySelector("#eng-track");
+    const dots = Array.from(root.querySelectorAll(".eng__dot"));
+    const count = track ? track.children.length : 0;
+    if (!track || !count) return;
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // 15s auto-rotation; navigating by hand holds that card 30s, then back to 15s.
+    const AUTO = 15000, MANUAL_HOLD = 30000;
+    let index = 0, raf = 0, startT = 0, paused = false, hold = AUTO;
+
+    const setDots = () => dots.forEach((d, i) => d.classList.toggle("is-active", i === index));
+    const stop = () => { if (raf) cancelAnimationFrame(raf); raf = 0; };
+
+    const tick = (now) => {
+      if (paused) return;
+      const p = Math.min((now - startT) / hold, 1);
+      if (p >= 1) { go(index + 1, false); return; }
+      raf = requestAnimationFrame(tick);
+    };
+    const restart = (duration = AUTO) => {
+      stop();
+      hold = duration;
+      if (reduce) return; // no auto-advance when motion is reduced
+      startT = performance.now();
+      raf = requestAnimationFrame(tick);
+    };
+    function go(i, manual) {
+      index = (i + count) % count;
+      track.style.transform = "translateX(" + (-index * 100) + "%)";
+      setDots();
+      restart(manual ? MANUAL_HOLD : AUTO);
+    }
+
+    root.querySelector("#eng-prev").addEventListener("click", () => go(index - 1, true));
+    root.querySelector("#eng-next").addEventListener("click", () => go(index + 1, true));
+    dots.forEach((d) => d.addEventListener("click", () => go(Number(d.dataset.i), true)));
+
+    const viewport = root.querySelector(".eng__cards");
+    viewport.addEventListener("mouseenter", () => { paused = true; stop(); });
+    viewport.addEventListener("mouseleave", () => {
+      if (!root.contains(document.activeElement)) { paused = false; restart(); }
+    });
+    // keyboard users: pause while focus is inside the section, resume on leave
+    root.addEventListener("focusin", () => { paused = true; stop(); });
+    root.addEventListener("focusout", () => {
+      if (!root.contains(document.relatedTarget)) { paused = false; restart(); }
+    });
+    // arrow keys are scoped to the section (only when focus is inside it),
+    // not hijacked page-wide
+    root.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") go(index - 1, true);
+      else if (e.key === "ArrowRight") go(index + 1, true);
+    });
+
+    go(0);
+  })();
+</script>
+
+<script is:inline>
+  (() => {
+    const m = document.getElementById("eng-marquee");
+    if (!m) return;
+    if (!("IntersectionObserver" in window)) { m.classList.add("is-in"); return; }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) { m.classList.add("is-in"); io.disconnect(); } });
+    }, { threshold: 0.25 });
+    io.observe(m);
+  })();
+</script>
+
+<style>
+  .eng {
+    /* unified with the global brand system (was a local palette + Playfair) */
+    --eng-bg: var(--bg);
+    --eng-card: var(--surface);
+    --eng-tile: var(--surface-2);
+    --eng-gold: var(--gold);
+    --eng-gold-dim: var(--muted);
+    --eng-white: var(--ink);
+    --eng-muted: var(--muted);
+    --eng-border: var(--line-strong);
+    --eng-serif: var(--font-serif);
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+  }
+  .eng__wrap { max-width: 1080px; margin-inline: auto; padding: 48px 24px; }
+
+  .eng__eyebrow {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--eng-gold);
+    margin-bottom: 48px;
+  }
+
+  /* main grid */
+  .eng__grid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 56px;
+    align-items: start;
+  }
+  .eng__photo {
+    margin: 0;
+    aspect-ratio: 3 / 4;
+    border: 1px solid var(--eng-border);
+    background: var(--eng-card);
+    overflow: hidden;
+  }
+  .eng__photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .eng__name {
+    margin-top: 16px;
+    font-family: var(--eng-serif);
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--eng-white);
+  }
+  .eng__role {
+    margin-top: 4px;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--eng-gold);
+  }
+
+  .eng__headline {
+    font-family: var(--eng-serif);
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 400;
+    line-height: 1.1;
+    color: var(--eng-white);
+    margin-bottom: 20px;
+  }
+  .eng__lead {
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--body);
+    max-width: 520px;
+    margin-bottom: 36px;
+  }
+
+  /* stat tiles: 2x2 with hairline gold grid */
+  .eng__tiles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--eng-border);
+    border: 1px solid var(--eng-border);
+  }
+  .eng__tile {
+    position: relative;
+    background: var(--eng-card);
+    padding: 24px 24px 26px;
+    transition: background 0.3s ease;
+    overflow: hidden;
+  }
+  /* accent rule that draws across the top edge on hover */
+  .eng__tile::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    height: 2px;
+    width: 100%;
+    background: var(--gold-text);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform 0.45s var(--ease-out-quart);
+  }
+  .eng__tile:hover { background: var(--eng-tile); }
+  .eng__tile:hover::before { transform: scaleX(1); }
+  .eng__tile-fig {
+    display: block;
+    font-family: var(--eng-serif);
+    font-size: clamp(28px, 3vw, 34px);
+    font-weight: 600;
+    color: var(--gold-text);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+  }
+  .eng__tile-desc {
+    display: block;
+    margin-top: 12px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--body);
+  }
+
+  /* trusted-by marquee */
+  .eng__trust {
+    border-top: 1px solid var(--eng-border);
+    border-bottom: 1px solid var(--eng-border);
+    padding: 14px 0;
+    margin: 0 0 48px;
+  }
+  .eng__trust-label {
+    text-align: center;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--eng-gold-dim);
+    margin-bottom: 12px;
+  }
+  /* scrolling marquee, paused until it enters the viewport so it always
+     starts at Sandia rather than mid-scroll */
+  .eng__marquee { position: relative; overflow: hidden; }
+  .eng__marquee::before,
+  .eng__marquee::after {
+    content: ""; position: absolute; top: 0; bottom: 0; width: 80px; z-index: 2; pointer-events: none;
+  }
+  .eng__marquee::before { left: 0; background: linear-gradient(90deg, var(--eng-bg), transparent); }
+  .eng__marquee::after { right: 0; background: linear-gradient(270deg, var(--eng-bg), transparent); }
+  .eng__track {
+    display: flex; align-items: center; width: max-content;
+    animation: engMarquee 52s linear infinite;
+    animation-play-state: paused;
+  }
+  .eng__marquee.is-in .eng__track { animation-play-state: running; }
+  .eng__marquee:hover .eng__track { animation-play-state: paused; }
+  @keyframes engMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .eng__m-item {
+    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--eng-muted); padding: 0 28px; white-space: nowrap;
+  }
+  .eng__m-sep { color: var(--eng-gold); opacity: 0.4; }
+  @media (prefers-reduced-motion: reduce) {
+    .eng__track { animation: none; }
+  }
+
+  /* seam: a labeled break between the credential tiles and the case cards */
+  .eng__seam {
+    margin-top: var(--space-xl);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .eng__seam::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--eng-border), transparent);
+  }
+  .eng__seam-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--eng-gold);
+    white-space: nowrap;
+  }
+
+  /* rotating project cards */
+  .eng__cards { position: relative; overflow: hidden; margin-top: var(--space-l); }
+  .eng__cardtrack {
+    display: flex;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .eng__cardtrack { transition: none; }
+  }
+  .eng__card {
+    min-width: 100%;
+    background: var(--eng-card);
+    border: 1px solid var(--eng-border);
+    padding: 32px 68px; /* wide gutters leave room for the overlay arrows */
+  }
+  .eng__card-tag {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold-text);
+  }
+  .eng__card-head {
+    margin-top: 14px;
+    font-family: var(--eng-serif);
+    font-size: clamp(24px, 2.6vw, 30px);
+    font-weight: 500;
+    line-height: 1.22;
+    letter-spacing: -0.01em;
+    color: var(--eng-white);
+  }
+  .eng__card-body {
+    margin-top: 16px;
+    font-size: 15.5px;
+    font-weight: 400;
+    line-height: 1.7;
+    color: var(--body);
+    max-width: 620px;
+  }
+
+  /* arrows: present overlay controls flanking the card, in the gutters */
+  .eng__arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 44px; height: 44px;
+    border: 1px solid var(--gold);
+    background: var(--surface-2);
+    color: var(--gold-text);
+    font-size: 18px;
+    cursor: pointer;
+    transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s var(--ease-out-quart);
+  }
+  .eng__arrow--prev { left: 12px; }
+  .eng__arrow--next { right: 12px; }
+  .eng__arrow:hover { background: var(--gold); color: var(--bg); }
+  .eng__arrow:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  .eng__dots {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: var(--space-s);
+  }
+  .eng__dot {
+    width: 8px; height: 8px;
+    padding: 0;
+    background: var(--line-strong);
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease;
+  }
+  .eng__dot.is-active { background: var(--gold); transform: scale(1.5); }
+
+  /* CTA block */
+  .eng__cta {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .eng__btn {
+    background: var(--eng-gold);
+    color: var(--eng-bg);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    padding: 14px 28px;
+    text-decoration: none;
+    transition: background 0.25s ease;
+  }
+  .eng__btn:hover { background: #dbb97e; }
+
+  @media (max-width: 720px) {
+    .eng__grid { grid-template-columns: 1fr; gap: 32px; }
+    /* show the whole portrait, scaled to fit, rather than cropping it */
+    .eng__photo { aspect-ratio: auto; }
+    .eng__photo img { height: auto; object-fit: contain; }
+    .eng__card { padding: 24px 52px; }
+    .eng__arrow { width: 36px; height: 36px; font-size: 15px; }
+    .eng__arrow--prev { left: 6px; }
+    .eng__arrow--next { right: 6px; }
+  }
+</style>

@@ -1,0 +1,49 @@
+---
+// BRUTAL-EDIT DRAFT — alternative, leaner cut of the landing page for review.
+// Not linked from anywhere; preview only at /brutal/. Promote to index.astro
+// if approved, or delete this file plus OfferLean/ProblemLean to discard.
+//
+// Changes vs index.astro:
+//  - Offer -> OfferLean (checklist + guarantee badge, credential dropped)
+//  - ActOne + Parable -> ProblemLean (one compact merged section)
+//  - Plan moved up (the path shows early)
+//  - Team removed (Procurement carries the human credibility)
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Hero from "../components/Hero.astro";
+import OfferLean from "../components/OfferLean.astro";
+import Plan from "../components/Plan.astro";
+import ProblemLean from "../components/ProblemLean.astro";
+import Procurement from "../components/Procurement.astro";
+import ActFour from "../components/ActFour.astro";
+import Harmonizer from "../components/Harmonizer.astro";
+import Proof from "../components/Proof.astro";
+import HvacShelf from "../components/HvacShelf.astro";
+import Floor from "../components/Floor.astro";
+import Estimator from "../components/Estimator.astro";
+import Success from "../components/Success.astro";
+import WhoWeWork from "../components/WhoWeWork.astro";
+import FinalCta from "../components/FinalCta.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<Base>
+  <Header />
+  <main id="main">
+    <Hero />
+    <OfferLean />
+    <Plan />
+    <ProblemLean />
+    <Procurement />
+    <ActFour />
+    <Harmonizer />
+    <Proof />
+    <HvacShelf />
+    <Floor />
+    <Estimator />
+    <Success />
+    <WhoWeWork />
+    <FinalCta />
+  </main>
+  <Footer />
+</Base>

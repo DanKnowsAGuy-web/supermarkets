@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Energy Plus — Booking card preview</title>
+  <style>
+    /* preview page only — NOT part of the drop-in component */
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 2rem 1rem;
+      background: linear-gradient(160deg, #15263F 0%, #0A1422 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================= -->
+  <!-- DROP-IN COMPONENT START                                       -->
+  <!-- Paste this whole block (section + style + script) into your   -->
+  <!-- page. No libraries, no build step, no backend.                -->
+  <!-- ============================================================= -->
+  <section class="ep-book" id="ep-book">
+    <div class="ep-book__head" data-ep-head>
+      <div class="ep-book__copy">
+        <p class="ep-book__eyebrow">Energy Plus <span class="ep-book__tag">Your Energy Partner</span></p>
+        <h2 class="ep-book__title">Schedule a Time With Me</h2>
+        <p class="ep-book__sub">Pick any open slot below. It books straight onto my calendar, so everything you see is genuinely available.</p>
+        <p class="ep-book__trust"><span class="ep-book__dot" aria-hidden="true"></span>Booked time is real time. No back-and-forth.</p>
+      </div>
+      <button type="button" class="ep-book__btn" id="ep-book-toggle" aria-expanded="false" aria-controls="ep-book-panel">
+        <span>Book a time</span>
+        <span class="ep-book__chev" aria-hidden="true"></span>
+      </button>
+    </div>
+
+    <div class="ep-book__panel" id="ep-book-panel" role="region" aria-label="Available appointment times">
+      <div class="ep-book__panel-inner">
+        <!--
+          PASTE YOUR GOOGLE URL OVER "YOUR_SCHEDULE_URL" BELOW.
+          It is the "Inline booking page" embed src from Google Calendar
+          (Appointment schedule > Share > Website embed > Inline booking page).
+          The URL ends in ?gv=true. Keep loading="lazy".
+        -->
+        <iframe
+          class="ep-book__iframe"
+          title="Energy Plus appointment booking"
+          src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ3vvVPAZ3Hxk10D2T5Q2PW9kkX-yumqn_iupMIUULQKsv2RmSt-cLMi6KAHqkPW5H2khzD1ukM9?gv=true"
+          loading="lazy"
+          frameborder="0"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .ep-book {
+      --ep-navy-deep: #0A1422;
+      --ep-navy: #15263F;
+      --ep-navy-hi: #1B3050;
+      --ep-gold: #C7A86B;
+      --ep-gold-text: #CBB079;
+      --ep-ink: #F0F3F7;
+      --ep-body: #A2AEBD;
+      --ep-label: #8DA0B5;
+      --ep-mint: #46B392;
+      --ep-panel: #F4F6FA;
+
+      width: 100%;
+      max-width: 640px;
+      margin-inline: auto;
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--ep-navy-deep);
+      box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.55);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .ep-book__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.25rem;
+      padding: 1.6rem 1.7rem;
+      background: linear-gradient(160deg, var(--ep-navy-hi) 0%, var(--ep-navy-deep) 100%);
+      cursor: pointer;
+    }
+    .ep-book__copy { min-width: 0; }
+
+    .ep-book__eyebrow {
+      margin: 0 0 0.5rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ep-label);
+    }
+    .ep-book__tag {
+      text-transform: none;
+      letter-spacing: 0.02em;
+      color: var(--ep-gold-text);
+      font-weight: 500;
+    }
+    .ep-book__tag::before { content: "·"; margin: 0 0.45em; color: var(--ep-label); }
+
+    .ep-book__title {
+      margin: 0;
+      font-size: 1.45rem;
+      line-height: 1.2;
+      font-weight: 600;
+      color: var(--ep-ink);
+      letter-spacing: -0.01em;
+    }
+    .ep-book__sub {
+      margin: 0.5rem 0 0;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      color: var(--ep-body);
+      max-width: 42ch;
+    }
+    .ep-book__trust {
+      margin: 0.85rem 0 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      font-size: 0.84rem;
+      font-weight: 500;
+      color: var(--ep-mint);
+    }
+    .ep-book__dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--ep-mint); flex: none;
+      box-shadow: 0 0 0 3px rgba(70, 179, 146, 0.18);
+    }
+
+    .ep-book__btn {
+      flex: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6em;
+      padding: 0.85em 1.5em;
+      border: none;
+      border-radius: 999px;
+      background: var(--ep-gold);
+      color: var(--ep-navy-deep);
+      font: inherit;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .ep-book__btn:hover { background: #D4B87C; transform: translateY(-1px); }
+    .ep-book__btn:focus-visible { outline: 2px solid var(--ep-gold-text); outline-offset: 3px; }
+    .ep-book__chev {
+      width: 0; height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 6px solid var(--ep-navy-deep);
+      transition: transform 0.3s ease;
+    }
+    .ep-book__btn[aria-expanded="true"] .ep-book__chev { transform: rotate(180deg); }
+
+    .ep-book__panel {
+      max-height: 0;
+      overflow: hidden;
+      background: var(--ep-panel);
+      transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .ep-book.is-open .ep-book__panel { max-height: 880px; }
+    .ep-book__panel-inner { padding: 1rem; }
+    .ep-book__iframe {
+      display: block;
+      width: 100%;
+      height: 640px;
+      border: 0;
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    @media (max-width: 560px) {
+      .ep-book__head { flex-direction: column; align-items: stretch; padding: 1.3rem 1.25rem; }
+      .ep-book__btn { justify-content: center; width: 100%; margin-top: 0.4rem; }
+      .ep-book__title { font-size: 1.3rem; }
+      .ep-book__panel-inner { padding: 0.6rem; }
+      .ep-book__iframe { height: 680px; }
+      .ep-book.is-open .ep-book__panel { max-height: 920px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .ep-book__panel, .ep-book__btn, .ep-book__chev { transition: none; }
+    }
+  </style>
+
+  <script>
+    (function () {
+      var card = document.getElementById("ep-book");
+      if (!card) return;
+      var head = card.querySelector("[data-ep-head]");
+      var btn = document.getElementById("ep-book-toggle");
+      var toggle = function () {
+        var open = card.classList.toggle("is-open");
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+      };
+      // Clicking anywhere on the header toggles. The button is inside the
+      // header, so its click (and keyboard Enter/Space, which fire a click)
+      // bubbles up here and toggles once. No separate button handler needed.
+      head.addEventListener("click", toggle);
+    })();
+  </script>
+  <!-- ============================================================= -->
+  <!-- DROP-IN COMPONENT END                                         -->
+  <!-- ============================================================= -->
+
+</body>
+</html>

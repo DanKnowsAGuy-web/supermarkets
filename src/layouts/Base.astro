@@ -1,0 +1,403 @@
+---
+// Self-hosted fonts (no external network, faster, renders anywhere).
+import "@fontsource-variable/newsreader/wght.css";
+import "@fontsource-variable/newsreader/wght-italic.css";
+import "@fontsource-variable/inter/wght.css";
+import "@fontsource/ibm-plex-mono/400.css";
+import "@fontsource/ibm-plex-mono/500.css";
+import "@fontsource/oswald/600.css";
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Energy Plus: verified energy savings for supermarkets",
+  description = "We cut your supermarket's energy costs and prove the savings at your meter before you pay a cent. We even pay for the diagnosis ourselves.",
+} = Astro.props;
+
+// Vertical through-line waveform paths (built once at compile time).
+// The distorted line is deliberately jagged: harmonic content plus a
+// deterministic point-to-point hash jitter so it reads as violent noise.
+const TLH = 1000;
+const TLN = 480;
+const tlMid = 15;
+const tlAmp = 9;
+function tlHash(i: number) {
+  const s = Math.sin(i * 127.1 + 311.7) * 43758.5453;
+  return (s - Math.floor(s)) * 2 - 1;
+}
+function tlPath(distort: boolean) {
+  let d = "";
+  for (let i = 0; i <= TLN; i++) {
+    const y = (i / TLN) * TLH;
+    const t = (i / TLN) * Math.PI * 2 * 26;
+    const x = distort
+      ? tlMid +
+        tlAmp *
+          (0.5 * Math.sin(t) +
+            0.26 * Math.sin(3 * t + 0.6) +
+            0.2 * Math.sin(7 * t + 1.2) +
+            0.38 * tlHash(i))
+      : tlMid + tlAmp * Math.sin(t);
+    d += (i === 0 ? "M" : "L") + x.toFixed(1) + " " + y.toFixed(1) + " ";
+  }
+  return d.trim();
+}
+const tlDist = tlPath(true);
+const tlClean = tlPath(false);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#141a1e" />
+    <title>{title}</title>
+
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+
+    <!-- Hybrid-theme prototype fonts (brutal4): grotesque + mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;700&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <div class="scroll-progress" aria-hidden="true"></div>
+
+    <!-- Harmonizer scrubber: a teal node rides the right edge at the scroll
+         position. Above it the signal is clean (already harmonized); below it
+         it is still distorted. As you scroll, the clean zone grows downward. -->
+    <div class="through-line" aria-hidden="true">
+      <div class="through-line__layer through-line__dist">
+        <svg viewBox="0 0 30 1000" preserveAspectRatio="none" fill="none">
+          <path
+            id="tl-dist-path"
+            d={tlDist}
+            stroke="var(--cost, #e05a2b)"
+            stroke-width="1.4"
+            vector-effect="non-scaling-stroke"></path>
+          <circle class="through-line__spark" data-spark-dur="7" data-spark-off="0" r="2.4" fill="var(--cost, #ff8a4d)"></circle>
+          <circle class="through-line__spark through-line__spark--b" data-spark-dur="11" data-spark-off="0.45" r="1.8" fill="var(--cost, #ffb070)"></circle>
+        </svg>
+      </div>
+      <div class="through-line__layer through-line__clean">
+        <svg viewBox="0 0 30 1000" preserveAspectRatio="none" fill="none">
+          <path
+            d={tlClean}
+            stroke="var(--gold-text)"
+            stroke-width="1.4"
+            vector-effect="non-scaling-stroke"></path>
+        </svg>
+      </div>
+      <div class="through-line__node"></div>
+    </div>
+
+    <div class="grain" aria-hidden="true"></div>
+    <slot />
+
+    <script>
+      // Open at the top: override the browser restoring a prior scroll
+      // position on reload or back/forward. Honor an explicit #anchor so
+      // deep links still land on their section.
+      if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+      window.addEventListener("pageshow", () => {
+        if (!location.hash) window.scrollTo(0, 0);
+      });
+
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+      // Word-by-word headline assembly: wrap each word of a [data-words]
+      // element in a staggered span. Skipped under reduced motion. Only run on
+      // plain-text elements (no child markup) to avoid clobbering nested spans.
+      if (!reduce.matches) {
+        document.querySelectorAll("[data-words]").forEach((el) => {
+          if (el.children.length) return;
+          const parts = el.textContent.split(/(\s+)/);
+          el.textContent = "";
+          let wi = 0;
+          for (const part of parts) {
+            if (/^\s+$/.test(part) || part === "") {
+              el.appendChild(document.createTextNode(part));
+              continue;
+            }
+            const span = document.createElement("span");
+            span.className = "word";
+            span.style.setProperty("--wi", String(wi++));
+            span.textContent = part;
+            el.appendChild(span);
+          }
+        });
+      }
+
+      // Reveal-on-scroll: content is visible by default (see .reveal in CSS);
+      // this only adds the entrance for users who allow motion. Lists carry
+      // style="--i: n" so siblings cascade in rather than all firing at once.
+      if (!reduce.matches && "IntersectionObserver" in window) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-in");
+                io.unobserve(entry.target);
+              }
+            }
+          },
+          { rootMargin: "0px 0px -10% 0px", threshold: 0.1 },
+        );
+        document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+      }
+
+      // Scroll-progress rail + through-line cleanup (rAF-throttled, one pass).
+      const rail = document.querySelector(".scroll-progress");
+      const thru = document.querySelector(".through-line");
+      if ((rail || thru) && !reduce.matches) {
+        let ticking = false;
+        const update = () => {
+          const h = document.documentElement;
+          const max = h.scrollHeight - h.clientHeight;
+          const p = max > 0 ? h.scrollTop / max : 0;
+          if (rail) rail.style.transform = "scaleX(" + p.toFixed(4) + ")";
+          // the scrubber node sits at the scroll position; everything above is
+          // clean (harmonized), everything below stays distorted.
+          if (thru) thru.style.setProperty("--scrub", (p * 100).toFixed(2) + "%");
+          ticking = false;
+        };
+        addEventListener(
+          "scroll",
+          () => {
+            if (!ticking) {
+              ticking = true;
+              requestAnimationFrame(update);
+            }
+          },
+          { passive: true },
+        );
+        update();
+      }
+
+      // Traveling sparks on the through-line's distorted wave (rAF-driven;
+      // SMIL is unreliable across engines). They inherit the group's opacity,
+      // so they fade out as the line resolves clean.
+      try {
+        const tlWrap = document.querySelector(".through-line");
+        const sparkPath = document.getElementById("tl-dist-path");
+        const sparks = document.querySelectorAll(".through-line__spark");
+        const tlVisible =
+          tlWrap && getComputedStyle(tlWrap).display !== "none";
+        if (tlVisible && sparkPath && sparks.length && !reduce.matches) {
+          const len = sparkPath.getTotalLength();
+          if (len > 0) {
+            const items = Array.from(sparks).map((el) => ({
+              el,
+              dur: Number(el.getAttribute("data-spark-dur")) * 1000,
+              off: Number(el.getAttribute("data-spark-off")),
+            }));
+            const t0 = performance.now();
+            const step = (now) => {
+              for (const s of items) {
+                const t = (((now - t0) / s.dur) + s.off) % 1;
+                const pt = sparkPath.getPointAtLength(t * len);
+                s.el.setAttribute("cx", pt.x.toFixed(2));
+                s.el.setAttribute("cy", pt.y.toFixed(2));
+              }
+              requestAnimationFrame(step);
+            };
+            requestAnimationFrame(step);
+          }
+        }
+      } catch (e) {
+        /* sparks are decoration; never let them break the page scripts */
+      }
+
+      // Pointer depth: parallax the ambient light layers and give buttons a
+      // magnetic drift + cursor-follow sheen. Fine pointers only; off when
+      // motion is reduced (touch devices keep the static, layered default).
+      if (window.matchMedia("(pointer: fine)").matches && !reduce.matches) {
+        const layers = document.querySelectorAll("[data-parallax]");
+        if (layers.length) {
+          let praf = 0, px = 0, py = 0;
+          addEventListener(
+            "pointermove",
+            (e) => {
+              px = (e.clientX / innerWidth - 0.5) * 16;
+              py = (e.clientY / innerHeight - 0.5) * 16;
+              if (!praf) {
+                praf = requestAnimationFrame(() => {
+                  layers.forEach((l) => {
+                    l.style.setProperty("--px", px.toFixed(1) + "px");
+                    l.style.setProperty("--py", py.toFixed(1) + "px");
+                  });
+                  praf = 0;
+                });
+              }
+            },
+            { passive: true },
+          );
+        }
+        document.querySelectorAll(".btn").forEach((b) => {
+          b.addEventListener(
+            "pointermove",
+            (e) => {
+              const r = b.getBoundingClientRect();
+              const x = e.clientX - r.left, y = e.clientY - r.top;
+              b.style.setProperty("--mx", ((x / r.width) * 100).toFixed(1) + "%");
+              b.style.setProperty("--my", ((y / r.height) * 100).toFixed(1) + "%");
+              b.style.setProperty("--bx", ((x / r.width - 0.5) * 6).toFixed(1) + "px");
+              b.style.setProperty("--by", ((y / r.height - 0.5) * 5).toFixed(1) + "px");
+            },
+            { passive: true },
+          );
+          b.addEventListener("pointerleave", () => {
+            b.style.setProperty("--bx", "0px");
+            b.style.setProperty("--by", "0px");
+          });
+        });
+
+        // Living cards: 3D tilt toward the cursor. JS owns the transform while
+        // engaged; .is-tilting swaps in the deeper shadow + edge ring.
+        const TILT = ".case, .eng__card, .eng__tile, .probl__panel, .offerl__box, .win__col, .step, .est__measured";
+        document.querySelectorAll(TILT).forEach((card) => {
+          let traf = 0, rx = 0, ry = 0, gx = 50, gy = 50;
+          card.addEventListener(
+            "pointermove",
+            (e) => {
+              const r = card.getBoundingClientRect();
+              const nx = (e.clientX - r.left) / r.width - 0.5;
+              const ny = (e.clientY - r.top) / r.height - 0.5;
+              ry = nx * 7;
+              rx = -ny * 7;
+              gx = (nx + 0.5) * 100;
+              gy = (ny + 0.5) * 100;
+              if (!traf) {
+                traf = requestAnimationFrame(() => {
+                  card.style.transform =
+                    "perspective(900px) rotateX(" + rx.toFixed(2) +
+                    "deg) rotateY(" + ry.toFixed(2) + "deg) translateY(-6px)";
+                  card.style.setProperty("--gx", gx.toFixed(1) + "%");
+                  card.style.setProperty("--gy", gy.toFixed(1) + "%");
+                  traf = 0;
+                });
+              }
+            },
+            { passive: true },
+          );
+          card.addEventListener("pointerenter", () => card.classList.add("is-tilting"));
+          card.addEventListener("pointerleave", () => {
+            card.classList.remove("is-tilting");
+            card.style.transform = "";
+          });
+        });
+
+      }
+
+      // Bio portraits: on touch (no hover), drive grayscale->color by scroll —
+      // full color when the image's center reaches the viewport center, fading
+      // to B&W as it nears the top or bottom. Desktop uses :hover (CSS).
+      if (matchMedia("(hover: none)").matches && !reduce.matches) {
+        const photos = Array.from(document.querySelectorAll(".bio-photo"));
+        if (photos.length) {
+          let bticking = false;
+          const paint = () => {
+            const mid = innerHeight / 2;
+            for (const ph of photos) {
+              const r = ph.getBoundingClientRect();
+              if (r.bottom < 0 || r.top > innerHeight) continue;
+              const center = (r.top + r.bottom) / 2;
+              const color = Math.max(0, Math.min(1, 1 - Math.abs(center - mid) / mid));
+              ph.style.filter = "grayscale(" + (1 - color).toFixed(3) + ")";
+            }
+            bticking = false;
+          };
+          addEventListener("scroll", () => {
+            if (!bticking) { bticking = true; requestAnimationFrame(paint); }
+          }, { passive: true });
+          addEventListener("resize", paint, { passive: true });
+          paint();
+        }
+      }
+
+      // Mint pulse: the "diagnosis is on us" dot pulses once on arrival.
+      const dot = document.querySelector(".pay__dot");
+      if (dot && !reduce.matches && "IntersectionObserver" in window) {
+        const io3 = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-pulse");
+                io3.disconnect();
+              }
+            }
+          },
+          { threshold: 0.9 },
+        );
+        io3.observe(dot);
+      }
+
+      // Count-up on any [data-countup] number. Enhances the visible default;
+      // if motion is reduced or IO is unavailable, the static text stays put.
+      // Optional data-prefix / data-suffix / data-decimals shape the output,
+      // so it works on "20%", "$600M+", "13.51%" alike. Range figures (e.g.
+      // "9-19%") are simply left untagged and render static.
+      const stats = document.querySelectorAll("[data-countup]");
+      if (stats.length && !reduce.matches && "IntersectionObserver" in window) {
+        const io2 = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (!entry.isIntersecting) continue;
+              io2.unobserve(entry.target);
+              const el = entry.target;
+              const target = Number(el.getAttribute("data-countup")) || 0;
+              const dec = Number(el.getAttribute("data-decimals")) || 0;
+              const prefix = el.getAttribute("data-prefix") || "";
+              const sufAttr = el.getAttribute("data-suffix");
+              const suffix = sufAttr === null ? "%" : sufAttr;
+              const start = performance.now();
+              const dur = 1100;
+              const ease = (t) => 1 - Math.pow(1 - t, 4);
+              const tick = (now) => {
+                const t = Math.min((now - start) / dur, 1);
+                el.textContent = prefix + (ease(t) * target).toFixed(dec) + suffix;
+                if (t < 1) requestAnimationFrame(tick);
+                else el.classList.add("is-locked"); // sweep the lock-in underline (#6)
+              };
+              requestAnimationFrame(tick);
+            }
+          },
+          { threshold: 0.6 },
+        );
+        stats.forEach((s) => io2.observe(s));
+      }
+    </script>
+
+    <style>
+      .skip-link {
+        position: absolute;
+        left: 1rem;
+        top: -3rem;
+        z-index: var(--z-header);
+        background: var(--ink);
+        color: var(--bg);
+        padding: 0.6rem 1rem;
+        border-radius: var(--radius-s);
+        font-weight: 600;
+        text-decoration: none;
+        transition: top 0.2s ease;
+      }
+      .skip-link:focus {
+        top: 1rem;
+      }
+    </style>
+  </body>
+</html>

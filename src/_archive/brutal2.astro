@@ -1,0 +1,48 @@
+---
+// BRUTAL-EDIT DRAFT v2 (second pass) — preview only at /brutal2/. Builds on
+// the brutal draft and adds:
+//  - ActFour -> ActFourLean (number-led stat cards)
+//  - HowYouPay reintroduced as PayLean (numbered stepper, after the estimator)
+// Promote to index.astro if approved, or delete brutal2.astro plus the *Lean
+// components to discard.
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Hero from "../components/Hero.astro";
+import OfferLean from "../components/OfferLean.astro";
+import Plan from "../components/Plan.astro";
+import ProblemLean from "../components/ProblemLean.astro";
+import Procurement from "../components/Procurement.astro";
+import ActFourLean from "../components/ActFourLean.astro";
+import Harmonizer from "../components/Harmonizer.astro";
+import Proof from "../components/Proof.astro";
+import HvacShelf from "../components/HvacShelf.astro";
+import Floor from "../components/Floor.astro";
+import Estimator from "../components/Estimator.astro";
+import PayLean from "../components/PayLean.astro";
+import Success from "../components/Success.astro";
+import WhoWeWork from "../components/WhoWeWork.astro";
+import FinalCta from "../components/FinalCta.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<Base>
+  <Header />
+  <main id="main">
+    <Hero />
+    <OfferLean />
+    <Plan />
+    <ProblemLean />
+    <Procurement />
+    <ActFourLean />
+    <Harmonizer />
+    <Proof />
+    <HvacShelf />
+    <Floor />
+    <Estimator />
+    <PayLean />
+    <Success />
+    <WhoWeWork />
+    <FinalCta />
+  </main>
+  <Footer />
+</Base>

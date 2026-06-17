@@ -1,0 +1,176 @@
+---
+// BRUTAL-EDIT VARIANT of ActFour, reworked as a left-aligned cost ledger
+// (worked-document feel per DESIGN.md) so it no longer mirrors the centered
+// Offer benefit boxes. Each row: animated equipment icon, the load + one line,
+// and the replacement cost right-aligned like a price list.
+const items = [
+  { key: "elev", fig: "$50K–$150K", per: "per cab", term: "Elevator traction motors", line: "Hard starts at 6–8x running current wear the motor out early, with ADA exposure while the cab is down." },
+  { key: "ptac", fig: "$260K–$480K", per: "per property", term: "Per-room PTAC fleet", line: "Run around the clock under heavy electrical stress; dirty power ages a 150-room fleet years too early." },
+  { key: "pump", fig: "$8K–$25K", per: "per pump", term: "Aquatic, spa & laundry drives", line: "Pumps and laundry drives fail the same way, and a peak-season closure turns straight into review damage." },
+];
+---
+
+<section class="section afl" id="what-we-find" aria-labelledby="afl-title">
+  <div class="container">
+    <div class="afl__head reveal">
+      <h2 class="afl__title" id="afl-title">What dirty power costs a supermarket.</h2>
+      <p class="afl__lede lede">
+        None of this shows up as a line item called waste, or in a standard
+        energy audit, so it survives for years until we measure it at the panel.
+      </p>
+    </div>
+
+    <ul class="afl__ledger">
+      <li class="afl__head-row" aria-hidden="true">
+        <span class="afl__h-load">The load</span>
+        <span class="afl__h-cost">Replacement cost</span>
+      </li>
+      {items.map((it, i) => (
+        <li class="afl__row reveal" style={`--i: ${i}`}>
+          <span class="afl__ico" aria-hidden="true">
+            {it.key === "elev" && (
+              <svg viewBox="0 0 48 48" fill="none">
+                <rect class="afl__i-stroke" x="14" y="6" width="20" height="36" rx="2" />
+                <line class="afl__i-stroke" x1="24" y1="6" x2="24" y2="42" opacity="0.45" />
+                <g class="afl__lift"><rect class="afl__i-cab afl__i-stroke" x="16" y="24" width="6" height="12" rx="1" /></g>
+                <g class="afl__lift afl__lift--b"><rect class="afl__i-cab afl__i-stroke" x="26" y="14" width="6" height="12" rx="1" /></g>
+              </svg>
+            )}
+            {it.key === "ptac" && (
+              <svg viewBox="0 0 48 48" fill="none">
+                <rect class="afl__i-stroke" x="6" y="14" width="36" height="20" rx="2" />
+                <line class="afl__i-stroke" x1="11" y1="20" x2="21" y2="20" opacity="0.6" />
+                <line class="afl__i-stroke" x1="11" y1="24" x2="21" y2="24" opacity="0.6" />
+                <line class="afl__i-stroke" x1="11" y1="28" x2="21" y2="28" opacity="0.6" />
+                <g class="afl__spin">
+                  <circle class="afl__i-hub" cx="31" cy="24" r="2" />
+                  <ellipse class="afl__i-blade" cx="31" cy="18.5" rx="2.4" ry="5" />
+                  <ellipse class="afl__i-blade" cx="36.5" cy="24" rx="5" ry="2.4" />
+                  <ellipse class="afl__i-blade" cx="31" cy="29.5" rx="2.4" ry="5" />
+                  <ellipse class="afl__i-blade" cx="25.5" cy="24" rx="5" ry="2.4" />
+                </g>
+              </svg>
+            )}
+            {it.key === "pump" && (
+              <svg viewBox="0 0 48 48" fill="none">
+                <circle class="afl__i-stroke" cx="22" cy="25" r="13" />
+                <rect class="afl__i-stroke" x="19" y="5" width="6" height="7" rx="1" />
+                <rect class="afl__i-stroke" x="35" y="22" width="7" height="6" rx="1" />
+                <g class="afl__spin">
+                  <circle class="afl__i-hub" cx="22" cy="25" r="2" />
+                  <path class="afl__i-vane" d="M22 25 q8 -4 10 2" />
+                  <path class="afl__i-vane" d="M22 25 q-8 4 -10 -2" />
+                  <path class="afl__i-vane" d="M22 25 q4 8 -2 10" />
+                  <path class="afl__i-vane" d="M22 25 q-4 -8 2 -10" />
+                </g>
+              </svg>
+            )}
+          </span>
+          <span class="afl__detail">
+            <span class="afl__term">{it.term}</span>
+            <span class="afl__line">{it.line}</span>
+          </span>
+          <span class="afl__cost">
+            <span class="afl__fig">{it.fig}</span>
+            <span class="afl__per">{it.per}</span>
+          </span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .afl {
+    border-top: 1px solid var(--line);
+    background:
+      radial-gradient(ellipse 50% 45% at 8% 100%, rgba(199, 168, 107, 0.04), transparent 70%),
+      var(--bg);
+  }
+  .afl__head { max-width: 54rem; }
+  .afl__title { font-size: var(--step-3); max-width: 20ch; }
+  .afl__lede { margin-top: var(--space-m); max-width: 56ch; }
+
+  .afl__ledger {
+    list-style: none;
+    margin: var(--space-xl) 0 0;
+    padding: 0;
+  }
+  .afl__head-row {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: var(--space-2xs);
+    border-bottom: 1px solid var(--line-strong);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .afl__row {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: clamp(1rem, 3vw, 2rem);
+    padding: clamp(1.1rem, 3vw, 1.6rem) 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .afl__ico svg { width: 40px; height: 40px; }
+  .afl__i-stroke {
+    stroke: var(--gold-text); stroke-width: 1.6; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  .afl__i-cab { fill: rgba(216, 190, 134, 0.16); }
+  .afl__i-hub { fill: var(--gold-text); }
+  .afl__i-blade { fill: rgba(216, 190, 134, 0.6); }
+  .afl__i-vane { stroke: var(--gold-text); stroke-width: 1.6; fill: none; stroke-linecap: round; }
+
+  .afl__detail { display: flex; flex-direction: column; gap: 0.25rem; }
+  .afl__term { font-size: var(--step-1); color: var(--ink); letter-spacing: -0.01em; }
+  .afl__line { font-size: var(--step--1); line-height: 1.5; color: var(--body); max-width: 52ch; }
+
+  .afl__cost {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .afl__fig {
+    font-family: var(--font-serif);
+    font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+    line-height: 1;
+    color: var(--gold-text);
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .afl__per {
+    margin-top: 0.3rem;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .afl__spin { transform-box: fill-box; transform-origin: center; animation: aflSpin 3.2s linear infinite; }
+    @keyframes aflSpin { to { transform: rotate(360deg); } }
+    .afl__lift { animation: aflLift 3.4s ease-in-out infinite; }
+    .afl__lift--b { animation-duration: 4.1s; animation-delay: 0.6s; }
+    @keyframes aflLift { 0%, 100% { transform: translateY(5px); } 50% { transform: translateY(-7px); } }
+  }
+
+  @media (max-width: 40rem) {
+    .afl__row {
+      grid-template-columns: 40px 1fr;
+      grid-template-areas: "ico detail" "ico cost";
+      row-gap: 0.4rem;
+    }
+    .afl__ico { grid-area: ico; align-self: start; }
+    .afl__detail { grid-area: detail; }
+    .afl__cost { grid-area: cost; align-items: flex-start; text-align: left; }
+    .afl__head-row { display: none; }
+  }
+</style>

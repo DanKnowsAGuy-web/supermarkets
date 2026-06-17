@@ -1,0 +1,190 @@
+---
+import logo from "../assets/energy-plus-logo.png";
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container site-footer__inner">
+    <div class="site-footer__brand">
+      <span class="footer-lockup">
+        <img class="footer-lockup__logo" src={logo.src} width="104" height="30" alt="Energy Plus" />
+        <span class="footer-lockup__div" aria-hidden="true"></span>
+        <span class="wordmark__industry">Supermarkets</span>
+      </span>
+      <p class="site-footer__line">
+        Independent energy partner to supermarkets. We don't sell the box. We diagnose
+        the store and verify the savings.
+      </p>
+    </div>
+
+    <nav class="site-footer__nav" aria-label="Footer">
+      <a href="#problem">The problem</a>
+      <a href="#procurement">The engineer</a>
+      <a href="#what-we-find">What we find</a>
+      <a href="#proof">Proof</a>
+      <a href="#calculator">Calculator</a>
+      <a href="#book">Apply Now</a>
+    </nav>
+  </div>
+
+  <div class="container" id="disclaimers">
+    <p class="site-footer__legal">
+      <strong>How to read this page.</strong> Energy Plus is an independent
+      energy solutions partner. We do not manufacture equipment. We diagnose
+      each property and procure, size, and integrate the right technologies
+      from our stack for that specific building. The numbered notes below apply
+      to the marked figures and statements throughout this page.
+    </p>
+    <ol class="site-footer__notes">
+      <li id="disc-results">
+        <strong>1. Savings and performance figures.</strong> All savings,
+        bill-reduction, equipment-life, maintenance, and payback figures shown
+        (including ranges such as 20&ndash;40% and 8&ndash;14%) are illustrative
+        estimates or results achieved at specific facilities under their own
+        conditions. They are not predictions or guarantees of your results.
+        Case studies reflect results with specific technologies we deploy. Your
+        actual results depend on your building, climate, occupancy, equipment
+        condition, and utility rates, which is exactly why we measure your floor
+        at your meter before you commit. Modeled numbers are directional
+        estimates, not quotes.
+      </li>
+      <li id="disc-terms">
+        <strong>2. Program terms and eligibility.</strong> Our done-for-you
+        program, including negotiation, pricing, and contract terms, is offered
+        case-by-case and depends on factors such as the number of facilities in
+        your portfolio and the size of your electricity bills. Properties that
+        do not qualify for the done-for-you program may instead be offered
+        self-directed ("do-it-yourself") options, which carry different terms,
+        pricing, and responsibilities. "No cost," "the diagnosis is on us," and
+        "nothing owed" describe the diagnosis and pilot phase for qualifying
+        properties; they do not describe the cost of any installed solution.
+        Eligibility, scheduling, and availability are determined during the
+        application and diagnosis process.
+      </li>
+      <li id="disc-tax">
+        <strong>3. Tax incentives.</strong> Section 179D and any tax figures
+        are potential amounts based on current federal rules and assumptions;
+        they are not tax advice. Actual deductions depend on your building, the
+        work performed, and your tax situation. Consult a qualified tax advisor.
+      </li>
+      <li id="disc-utility">
+        <strong>4. Utility and incentive programs.</strong> Utility-program
+        coverage (for example, "up to 75%," or the state percentages shown in
+        the calculator) varies by state, utility, and program, and is subject to
+        program availability, funding, and qualification. Amounts shown are
+        illustrative and are not guaranteed.
+      </li>
+    </ol>
+  </div>
+
+  <div class="container site-footer__meta">
+    <span>&copy; {year} Energy Plus</span>
+    <span class="site-footer__neutral">Independent Energy Solutions Partner.</span>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--line);
+    background: var(--bg-header);
+    padding-block: var(--space-xl) var(--space-l);
+  }
+  .site-footer__inner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-l);
+  }
+  .site-footer__brand {
+    max-width: 34ch;
+  }
+  .footer-lockup {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+  .footer-lockup__logo {
+    height: 26px;
+    width: auto;
+    display: block;
+  }
+  .footer-lockup__div {
+    width: 1px;
+    height: 20px;
+    background: var(--line-strong);
+  }
+  .wordmark__industry {
+    font-family: "Oswald", var(--font-sans);
+    font-weight: 600;
+    font-size: 1.05rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .site-footer__line {
+    margin-top: var(--space-s);
+    font-size: var(--step--1);
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .site-footer__nav {
+    display: grid;
+    gap: 0.65rem;
+    align-content: start;
+  }
+  .site-footer__nav a {
+    color: var(--body);
+    text-decoration: none;
+    font-size: var(--step--1);
+    transition: color 0.25s ease;
+  }
+  .site-footer__nav a:hover {
+    color: var(--gold-text);
+  }
+  .site-footer__legal {
+    margin-top: var(--space-xl);
+    font-size: 0.72rem;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 78ch;
+  }
+  .site-footer__legal strong {
+    color: var(--body);
+    font-weight: 600;
+  }
+  .site-footer__notes {
+    margin: var(--space-m) 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: var(--space-s);
+    max-width: 78ch;
+  }
+  .site-footer__notes li {
+    font-size: 0.72rem;
+    line-height: 1.6;
+    color: var(--muted);
+    /* a target highlight when an in-page marker jumps here */
+    scroll-margin-top: 5rem;
+    transition: color 0.3s ease;
+  }
+  .site-footer__notes li:target {
+    color: var(--body);
+  }
+  .site-footer__notes strong {
+    color: var(--body);
+    font-weight: 600;
+  }
+
+  .site-footer__meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-s);
+    margin-top: var(--space-xl);
+    padding-top: var(--space-m);
+    border-top: 1px solid var(--line);
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+</style>

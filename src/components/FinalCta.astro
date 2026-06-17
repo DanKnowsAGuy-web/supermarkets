@@ -1,0 +1,103 @@
+---
+import CtaPair from "./CtaPair.astro";
+import Disc from "./Disc.astro";
+---
+
+<section class="section final" id="book" aria-labelledby="final-title">
+  <div class="container">
+    <div class="final__inner reveal">
+      <h2 class="final__title" id="final-title">
+        Stop paying for power your supermarket never uses.
+      </h2>
+      <p class="final__lede">
+        Fifteen minutes. We look at your portfolio, tell you whether a Verified
+        Savings Pilot makes sense, and show you exactly how we'd diagnose and
+        verify the floor at your building. No projection, no pressure.
+      </p>
+
+      <p class="final__promise">
+        <span class="final__promise-dot" aria-hidden="true"></span>
+        <span>
+          <strong>Verify first, commit after.</strong> The diagnosis is on us.
+          Nothing is installed, and nothing is owed, until we prove your savings
+          floor at your own meter.<Disc to="terms" />
+        </span>
+      </p>
+
+      <div class="final__actions">
+        <CtaPair size="lg" />
+        <span class="final__aside">We typically have a same-week slot.<Disc to="terms" /></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .final {
+    position: relative;
+    overflow: hidden;
+    border-top: 1px solid var(--line);
+    background: linear-gradient(
+      200deg,
+      var(--hero-to) 0%,
+      var(--bg-header) 100%
+    );
+  }
+  .final__inner {
+    position: relative;
+    max-width: 46rem;
+  }
+  .final__title {
+    font-size: var(--step-4);
+    max-width: 18ch;
+  }
+  .final__lede {
+    margin-top: var(--space-m);
+    font-size: var(--step-1);
+    line-height: 1.5;
+    color: var(--body);
+    max-width: 54ch;
+  }
+  .final__promise {
+    margin-top: var(--space-l);
+    max-width: 52ch;
+    display: flex;
+    gap: var(--space-s);
+    align-items: flex-start;
+    padding: var(--space-m);
+    background: color-mix(in srgb, var(--mint) 6%, transparent);
+    border: 1px solid color-mix(in srgb, var(--mint) 35%, transparent);
+    border-radius: var(--radius);
+    font-size: var(--step-0);
+    line-height: 1.55;
+    color: var(--body);
+  }
+  .final__promise strong {
+    color: var(--mint);
+    font-weight: 600;
+  }
+  .final__promise-dot {
+    flex: none;
+    margin-top: 0.5em;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--mint);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--mint) 15%, transparent);
+  }
+  .final__actions {
+    margin-top: var(--space-l);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-m);
+  }
+  .btn--lg {
+    padding: 1.1em 1.9em;
+    font-size: var(--step-1);
+  }
+  .final__aside {
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+</style>

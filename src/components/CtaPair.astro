@@ -1,0 +1,155 @@
+---
+// Reusable CTA pair. "Apply Now" opens the Cal.com scheduler in a modal overlay
+// (reliable on mobile, no inline iframe scroll-trapping). "Just text the
+// founder" expands an SMS panel in place. Cal's script loads once, shortly
+// after page load and on first interaction, so the modal trigger
+// (data-cal-link on the buttons) is bound by the time it's clicked.
+const { size = "" } = Astro.props;
+const lg = size === "lg" ? " btn--lg" : "";
+const PHONE_DISPLAY = "(864) 777-0688";
+const MSG =
+  "Hi Dan, I run a supermarket and I'd like to see what real energy savings could look like at my store, without the sales song and dance. What does it take to qualify?";
+const CAL_LINK = "dan-knows-a-gut/15min";
+---
+
+<div class="tf-cta">
+  <div class="tf-cta__row">
+    <button
+      type="button"
+      class={`btn js-book-toggle${lg}`}
+      data-cal-namespace="15min"
+      data-cal-link={CAL_LINK}
+      data-cal-config='{"layout":"month_view","theme":"dark"}'
+    >
+      Apply Now
+      <span class="btn__arrow" aria-hidden="true">&rarr;</span>
+    </button>
+    <button type="button" class={`btn btn--ghost js-tf-toggle${lg}`} aria-expanded="false">
+      Just text the founder
+    </button>
+  </div>
+
+  <div class="tf-panel" role="group" aria-label="Text the founder">
+    <p class="tf-panel__to">To <span>Dan &middot; {PHONE_DISPLAY}</span></p>
+    <textarea class="tf-panel__msg js-tf-msg" rows="4" spellcheck="false">{MSG}</textarea>
+    <div class="tf-panel__foot">
+      <span class="tf-panel__hint">Opens in your messages, ready to send.</span>
+      <a class="tf-panel__send js-tf-send" href="#" data-phone="+18647770688">
+        Send message
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12 h13 M12 5 l7 7 -7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (() => {
+    if (window.__tfInit) return;
+    window.__tfInit = true;
+    const ua = navigator.userAgent || "";
+    const isIOS = /iP(hone|ad|od)/.test(ua) || (/Mac/.test(ua) && "ontouchend" in document);
+
+    // --- Cal.com: load once; the Apply Now buttons open it as a modal overlay
+    // via their data-cal-link binding (no inline iframe, so no mobile trap).
+    const ensureCal = () => {
+      if (window.__calReady) return;
+      window.__calReady = true;
+      (function (C, A, L) { let p = function (a, ar) { a.q.push(ar); }; let d = C.document; C.Cal = C.Cal || function () { let cal = C.Cal; let ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; } if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if (typeof namespace === "string") { cal.ns[namespace] = cal.ns[namespace] || api; p(cal.ns[namespace], ar); p(cal, ["initNamespace", namespace]); } else p(cal, ar); return; } p(cal, ar); }; })(window, "https://app.cal.com/embed/embed.js", "init");
+      window.Cal("init", "15min", { origin: "https://app.cal.com" });
+      window.Cal.config = window.Cal.config || {};
+      window.Cal.config.forwardQueryParams = true;
+      window.Cal.ns["15min"]("ui", { hideEventTypeDetails: false, layout: "month_view", theme: "dark", cssVarsPerTheme: { dark: { "cal-brand": "#46cfd6" } } });
+    };
+    // preload so the modal trigger is bound before it's clicked
+    if (document.readyState === "complete") setTimeout(ensureCal, 900);
+    else addEventListener("load", () => setTimeout(ensureCal, 900));
+    ["pointerdown", "touchstart", "keydown", "scroll"].forEach((ev) =>
+      addEventListener(ev, ensureCal, { once: true, passive: true }),
+    );
+
+    const buildSms = (cta) => {
+      const msg = cta.querySelector(".js-tf-msg");
+      const send = cta.querySelector(".js-tf-send");
+      if (!msg || !send) return;
+      send.href = "sms:" + (send.getAttribute("data-phone") || "") + (isIOS ? "&" : "?") + "body=" + encodeURIComponent(msg.value);
+    };
+    // grow the textarea to fit its full text so there's no inner scroll.
+    // Skip if it isn't laid out yet (e.g. an off-screen panel with 0 width);
+    // it re-runs on open, when the panel is visible and full width.
+    const autosize = (el) => {
+      if (!el || el.offsetWidth < 60) return;
+      el.style.height = "auto";
+      el.style.height = el.scrollHeight + "px";
+    };
+    const closeTf = (cta) => {
+      cta.querySelector(".tf-panel").classList.remove("is-open");
+      const t = cta.querySelector(".js-tf-toggle");
+      if (t) t.setAttribute("aria-expanded", "false");
+    };
+    document.addEventListener("click", (e) => {
+      // Apply Now: Cal opens the modal itself; we just ensure it's loaded and
+      // tidy up the text panel if it was open
+      const bookT = e.target.closest(".js-book-toggle");
+      if (bookT) { ensureCal(); closeTf(bookT.closest(".tf-cta")); return; }
+      const tfT = e.target.closest(".js-tf-toggle");
+      if (tfT) {
+        const cta = tfT.closest(".tf-cta");
+        const tf = cta.querySelector(".tf-panel");
+        const willOpen = !tf.classList.contains("is-open");
+        if (willOpen) {
+          tf.classList.add("is-open");
+          tfT.setAttribute("aria-expanded", "true");
+          buildSms(cta);
+          const m = cta.querySelector(".js-tf-msg");
+          if (m) { autosize(m); setTimeout(() => { autosize(m); m.focus(); }, 80); }
+        } else { closeTf(cta); }
+        return;
+      }
+    });
+    document.addEventListener("input", (e) => {
+      const t = e.target;
+      if (t && t.classList && t.classList.contains("js-tf-msg")) { buildSms(t.closest(".tf-cta")); autosize(t); }
+    });
+  })();
+</script>
+
+<style>
+  .tf-cta { width: 100%; }
+  .tf-cta__row { display: flex; flex-wrap: wrap; gap: var(--space-s); align-items: center; }
+
+  /* text-the-founder panel: smooth in-place expand */
+  .tf-panel {
+    overflow: hidden; max-height: 0; opacity: 0;
+    transition: max-height 0.5s var(--ease-out-quart), opacity 0.35s ease, margin-top 0.5s var(--ease-out-quart);
+  }
+  .tf-panel.is-open { max-height: 34rem; opacity: 1; margin-top: var(--space-m); }
+  .tf-panel__to { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); }
+  .tf-panel__to span { color: var(--body); }
+  .tf-panel__msg {
+    width: 100%; max-width: 38rem; margin-top: 0.5rem; resize: vertical;
+    overflow-y: hidden;
+    background: var(--mint-soft); color: var(--ink);
+    border: 1px solid color-mix(in srgb, var(--mint) 38%, transparent);
+    border-radius: 16px; padding: 0.75rem 0.95rem;
+    font-family: var(--font-sans); font-size: var(--step-0); line-height: 1.5;
+  }
+  .tf-panel__msg:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+  .tf-panel__foot {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: var(--space-s); flex-wrap: wrap; max-width: 38rem; margin-top: 0.6rem;
+  }
+  .tf-panel__hint { font-size: 0.72rem; color: var(--muted); }
+  .tf-panel__send {
+    display: inline-flex; align-items: center; gap: 0.5em;
+    background: var(--mint); color: var(--bg);
+    font-family: var(--font-sans); font-weight: 600; font-size: var(--step--1);
+    padding: 0.6em 1.1em; border-radius: 999px; text-decoration: none; cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  .tf-panel__send svg { width: 1.05em; height: 1.05em; }
+  .tf-panel__send:hover { transform: translateY(-1px); background: color-mix(in srgb, var(--mint) 86%, white); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tf-panel { transition: opacity 0.3s ease; }
+  }
+</style>

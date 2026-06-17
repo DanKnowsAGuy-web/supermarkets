@@ -1,0 +1,97 @@
+---
+// The stakes, as a two-tone contrast split: the cost of waiting (amber, ✗)
+// against the operator's transformed world (mint, ✓). Scannable, and it makes
+// the choice feel binary.
+const wait = [
+  "You keep paying for power you can't use",
+  "Equipment keeps wearing out years early",
+  "The next vendor sells you another box",
+  "Your costs stay unpredictable, set by everyone but you",
+];
+const act = [
+  "A building that runs as one system",
+  "No 2 a.m. calls about a failed compressor",
+  "A power bill you can predict to the dollar",
+  "You're the operator nobody sells anymore",
+];
+---
+
+<section class="section win" id="success" aria-labelledby="win-title">
+  <div class="container container--narrow">
+    <div class="win__head reveal">
+      <h2 class="win__title" id="win-title">The operator who isn't fooled twice.</h2>
+    </div>
+
+    <div class="win__split">
+      <div class="win__col win__col--wait reveal">
+        <p class="win__label">If you keep waiting</p>
+        <ul class="win__list">
+          {wait.map((t, i) => (
+            <li class="win__item reveal" style={`--i: ${i + 1}`}><span class="win__mark" aria-hidden="true">&#10005;</span>{t}</li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="win__col win__col--act reveal" style="--i: 1">
+        <p class="win__label">When you act</p>
+        <ul class="win__list">
+          {act.map((t, i) => (
+            <li class="win__item reveal" style={`--i: ${i + 1}`}><span class="win__mark" aria-hidden="true">&#10003;</span>{t}</li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .win { border-top: 1px solid var(--line); }
+  .win__title { font-size: var(--step-2); max-width: 18ch; }
+
+  .win__split {
+    margin-top: var(--space-xl);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(1rem, 3vw, 2rem);
+  }
+  @media (max-width: 680px) {
+    .win__split { grid-template-columns: 1fr; }
+  }
+  .win__col {
+    padding: clamp(1.2rem, 3vw, 1.8rem);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.012);
+  }
+  .win__col--wait { border-color: color-mix(in srgb, var(--cost, #e0894a) 28%, transparent); }
+  .win__col--act { border-color: color-mix(in srgb, var(--mint) 30%, transparent); }
+
+  .win__label {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: var(--space-s);
+  }
+  .win__col--wait .win__label { color: var(--cost, #e0894a); }
+  .win__col--act .win__label { color: var(--mint); }
+
+  .win__list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-s); }
+  .win__item {
+    display: flex;
+    gap: 0.7rem;
+    align-items: flex-start;
+    font-size: var(--step-0);
+    line-height: 1.45;
+    color: var(--body);
+  }
+  .win__mark {
+    flex: none;
+    font-size: 0.85em;
+    font-weight: 700;
+    margin-top: 0.15em;
+  }
+  .win__col--wait .win__mark { color: var(--cost, #e0894a); }
+  .win__col--act .win__mark { color: var(--mint); }
+  .win__col--act .win__item { color: var(--ink); }
+</style>
