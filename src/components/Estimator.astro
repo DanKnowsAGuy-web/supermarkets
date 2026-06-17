@@ -1,12 +1,14 @@
 ---
-// Native savings estimator, matched to the original _saveenergy calculator's
-// HOTEL profile: harmoRate 0.08, hvacShare 0.45, cooling 15-55% of the cooling
-// pool (pool = hvacShare x state cooling split), demand 0.05 x 0.40 (demand
-// reduction x demand share), outdoor lighting hotel 4-9% (off-grid mult 1.0),
-// rate negotiation 2.5-6% in deregulated states. Heating is left UNMODELED by
-// default (an upside, never in the conservative floor), exactly as the
-// original. Portfolio low x floor to high x ceiling; escalation via the annuity
-// factor (ESC tiers/rates and the state cooling table identical to the original).
+// Native savings estimator, matched to the bilingual_ep_calculator SUPERMARKET
+// profile: harmoRate 0.09, hvacShare 0.55, cooling 15-55% of the cooling pool
+// (pool = hvacShare x cooling share, where cooling share = max(state split, 95%)
+// because grocery refrigeration runs cooling year-round in every climate),
+// demand 0.05 x 0.40 (demand reduction x demand share), outdoor lighting
+// supermarket 2-5% (off-grid mult 1.0), rate negotiation 2.5-6% in deregulated
+// states. Heating is left UNMODELED by default (an upside, never in the
+// conservative floor; negligible for grocery at ~95% cooling). Portfolio low x
+// floor to high x ceiling; escalation via the annuity factor (ESC tiers/rates
+// and the state cooling table identical to the master).
 import CtaPair from "./CtaPair.astro";
 import Disc from "./Disc.astro";
 const STATE_COOL: Record<string, number> = {
@@ -260,10 +262,10 @@ const spendBands = [
         <div class="est__fact">
           <h3 class="est__fact-title">Two more loads we haven't shown</h3>
           <p class="est__fact-body">
-            Beyond the elevator motors, per-room PTACs, and the pool and
-            laundry drives from the scene above, the same distortion is
-            working on your <strong>kitchen refrigeration</strong> and
-            <strong>common-area lighting</strong>. The bill is the floor;
+            Beyond the refrigeration racks, rooftop units, and walk-in
+            compressors from the scene above, the same distortion is
+            working on your <strong>display-case lighting</strong> and
+            <strong>anti-sweat door heaters</strong>. The bill is the floor;
             <a href="#proof">the equipment is the other half of the story</a>.
           </p>
         </div>
@@ -401,20 +403,22 @@ const spendBands = [
       const monthly = Number(narrow.value);
       const S = monthly * 12; // the model works on annual spend
       const opt = stateEl.options[stateEl.selectedIndex];
-      const cool = Number(opt.getAttribute("data-cool")) / 100;
+      // supermarket cooling floor: refrigeration runs cooling year-round, so the
+      // cooling share of HVAC is at least 95% in every climate (master coolMin=95)
+      const cool = Math.max(Number(opt.getAttribute("data-cool")), 95) / 100;
       const rate = Number(opt.getAttribute("data-rate"));
       const range = opt.getAttribute("data-range");
       const dereg = opt.getAttribute("data-dereg") === "1";
       const [lo, hi] = cIn.value.split("-").map(Number);
       const short = cIn.getAttribute("data-short");
 
-      // streams, matched to the original calculator's hotel profile
-      const harmo = 0.08 * S;             // harmonization floor, hotel 8%
-      const H = 0.45 * S;                 // HVAC share of bill, hotel 45%
+      // streams, matched to the master calculator's supermarket profile
+      const harmo = 0.09 * S;             // harmonization floor, supermarket 9%
+      const H = 0.55 * S;                 // HVAC + refrigeration share of bill, supermarket 55%
       const C = H * cool;                 // cooling pool = HVAC x state cooling split
       const coolF = 0.15 * C, coolC = 0.55 * C;
       const dem = 0.05 * 0.40 * S;        // demand reduction 5% x demand share 40%
-      const litF = 0.04 * S, litC = 0.09 * S; // outdoor lighting, hotel 4-9%, off-grid x1.0
+      const litF = 0.02 * S, litC = 0.05 * S; // outdoor lighting, supermarket 2-5%, off-grid x1.0
       const negoF = dereg ? 0.025 * S : 0, negoC = dereg ? 0.06 * S : 0;
       // Heating (heat-pump replacement) is left unmodeled by default, exactly
       // as the original: it is an upside, never part of the conservative floor.
@@ -430,7 +434,7 @@ const spendBands = [
       // inputs panel
       $("est-t-spend").textContent = fmt(monthly) + " / mo";
       $("est-t-spend-yr").textContent = "≈ " + fmt(S) + " / yr";
-      $("est-t-hvac").textContent = "45%";
+      $("est-t-hvac").textContent = "55%";
       $("est-t-cool").textContent = Math.round(cool * 100) + "%";
       $("est-t-state").textContent = opt.value;
       $("est-t-heat").textContent = "not modeled";
