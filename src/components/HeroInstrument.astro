@@ -5,20 +5,6 @@
 // the other pages. Structure + JS identical to Hero.astro.
 import CtaPair from "./CtaPair.astro";
 import Disc from "./Disc.astro";
-function grid(x0, y0, cols, rows, gapX, gapY, w, h, lit) {
-  const cells = [];
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      cells.push({ x: x0 + c * gapX, y: y0 + r * gapY, w, h, lit: lit.has(r + "-" + c) });
-    }
-  }
-  return cells;
-}
-const tower = grid(448, 150, 5, 9, 40, 42, 26, 28,
-  new Set(["1-3", "2-0", "3-2", "4-4", "5-1", "6-3", "7-0", "8-2"]));
-const wingL = grid(322, 262, 2, 6, 46, 48, 28, 30, new Set(["0-1", "3-0", "5-1"]));
-const wingR = grid(676, 262, 2, 6, 46, 48, 28, 30, new Set(["1-0", "2-1", "4-0"]));
-
 function wire(x1, y1, x2, y2, amp = 2.4, wl = 17) {
   const dx = x2 - x1, dy = y2 - y1;
   const len = Math.hypot(dx, dy) || 1;
@@ -35,27 +21,28 @@ function wire(x1, y1, x2, y2, amp = 2.4, wl = 17) {
   }
   return d;
 }
+// Wiring for the big-box store: a service riser up the right wall, a ceiling
+// main spanning the roof line that feeds the rooftop condensers, and a floor
+// main running the length of the refrigerated case lineup.
 const mains = [
-  [540, 100, 540, 542, 2.2, 15],
-  [470, 128, 470, 540, 2.4, 17],
-  [610, 128, 610, 540, 2.4, 17],
-  [360, 244, 360, 540, 2.4, 17],
-  [720, 244, 720, 540, 2.4, 17],
+  [752, 548, 752, 372, 2.2, 15],
+  [300, 372, 762, 372, 2.4, 17],
+  [300, 520, 668, 520, 2.4, 17],
 ];
 const runs = [
-  [470, 162, 610, 162], [470, 204, 610, 204], [360, 288, 720, 288],
-  [320, 372, 760, 372], [360, 456, 720, 456], [470, 498, 610, 498],
-  [300, 312, 430, 312], [650, 312, 780, 312],
-  [300, 456, 430, 456], [650, 456, 780, 456],
+  [410, 372, 410, 344], [520, 372, 520, 356], [620, 372, 620, 352],
+  [720, 372, 720, 446], [300, 372, 300, 520],
+  [430, 520, 430, 500], [520, 520, 520, 500], [600, 520, 600, 500],
+  [360, 466, 320, 466], [360, 486, 312, 486],
 ];
 const branches = [
-  [540, 128, 540, 102, 3.2, 12],
-  [540, 288, 600, 330, 3.4, 12],
-  [470, 456, 366, 452, 3.4, 12],
-  [540, 498, 500, 520, 3.4, 12],
-  [610, 498, 720, 512, 3.4, 12],
-  [540, 372, 470, 372, 3.4, 12],
-  [360, 312, 360, 324, 3.4, 10],
+  [752, 470, 724, 466, 3.2, 12],
+  [752, 512, 740, 514, 3.4, 12],
+  [410, 500, 410, 524, 3.4, 12],
+  [300, 460, 330, 460, 3.4, 12],
+  [580, 500, 580, 520, 3.4, 12],
+  [648, 500, 648, 522, 3.4, 12],
+  [520, 356, 520, 372, 3.4, 10],
 ];
 ---
 
@@ -82,13 +69,12 @@ const branches = [
         <rect x="0" y="0" width="1000" height="640" fill="url(#blueprint)" />
 
         <g stroke="rgba(220,228,230,0.12)" stroke-width="1.2" fill="none">
-          <path d="M430 120 H650 V560 H430 Z" />
-          <path d="M300 240 H430 M300 240 V560 H430" />
-          <path d="M650 240 H780 M780 240 V560 H650" />
-          <line x1="280" y1="560" x2="800" y2="560" stroke-width="1.5" />
-          {[162, 204, 246, 288, 330, 372, 414, 456, 498].map((y) => (<line x1="430" y1={y} x2="650" y2={y} />))}
-          {[312, 384, 456].map((y) => (<line x1="300" y1={y} x2="430" y2={y} />))}
-          {[312, 384, 456].map((y) => (<line x1="650" y1={y} x2="780" y2={y} />))}
+          <path d="M250 360 H790 V560 H250 Z" />
+          <line x1="250" y1="420" x2="790" y2="420" />
+          <line x1="360" y1="420" x2="360" y2="560" />
+          <line x1="680" y1="420" x2="680" y2="560" />
+          <line x1="250" y1="560" x2="800" y2="560" stroke-width="1.5" />
+          {[474, 500, 526].map((y) => (<line x1="372" y1={y} x2="668" y2={y} />))}
         </g>
 
         <g class="wires" fill="none" stroke="url(#redwire)" stroke-linecap="round">
@@ -97,142 +83,139 @@ const branches = [
           {branches.map((w, i) => (<path class="wire wire--branch" style={`--d:${i * 0.1}s`} d={wire(w[0], w[1], w[2], w[3], w[4], w[5])} />))}
         </g>
 
-        <g class="dev" data-dev="ahu" data-name="Rooftop AHUs" data-cost="920" data-metric="PF 0.81">
+        <g class="dev" data-dev="condenser" data-name="Rooftop condensers" data-cost="1020" data-metric="head pressure high">
 
-          <circle class="dev__glow" cx="540" cy="96" r="36" fill="url(#heat)" />
+          <circle class="dev__glow" cx="410" cy="338" r="34" fill="url(#heat)" />
           <g class="dev__body">
-            <rect x="506" y="80" width="68" height="26" rx="3" />
-            <line x1="514" y1="80" x2="514" y2="106" /><line x1="522" y1="80" x2="522" y2="106" />
-            <line x1="558" y1="80" x2="558" y2="106" /><line x1="566" y1="80" x2="566" y2="106" />
+            <rect x="380" y="322" width="60" height="32" rx="3" />
+            <line x1="392" y1="322" x2="392" y2="354" /><line x1="428" y1="322" x2="428" y2="354" />
           </g>
-          <g class="dev__spin" style="--spin:2.2s">
-            <circle class="dev__hub" cx="540" cy="93" r="3" />
-            <ellipse class="dev__blade" cx="540" cy="85" rx="3.4" ry="8" />
-            <ellipse class="dev__blade" cx="548" cy="93" rx="8" ry="3.4" />
-            <ellipse class="dev__blade" cx="540" cy="101" rx="3.4" ry="8" />
-            <ellipse class="dev__blade" cx="532" cy="93" rx="8" ry="3.4" />
+          <g class="dev__spin" style="--spin:2.1s">
+            <circle class="dev__hub" cx="410" cy="337" r="3" />
+            <ellipse class="dev__blade" cx="410" cy="329" rx="3.4" ry="8" />
+            <ellipse class="dev__blade" cx="418" cy="337" rx="8" ry="3.4" />
+            <ellipse class="dev__blade" cx="410" cy="345" rx="3.4" ry="8" />
+            <ellipse class="dev__blade" cx="402" cy="337" rx="8" ry="3.4" />
           </g>
-          <g class="dev__tag" transform="translate(584 72)">
-            <line x1="-12" y1="24" x2="0" y2="16" stroke="#4fc4cf" stroke-width="1" />
-            <text x="4" y="20">Rooftop units fighting each other</text>
+          <g class="dev__tag" transform="translate(454 320)">
+            <line x1="-12" y1="18" x2="0" y2="16" stroke="#4fc4cf" stroke-width="1" />
+            <text x="4" y="20">Condensers running hot on the roof</text>
           </g>
         </g>
 
-        <g class="dev" data-dev="laundry" data-name="Laundry exhaust" data-cost="360" data-metric="+14&#176;F loss">
+        <g class="dev" data-dev="cases" data-name="Open display cases" data-cost="760" data-metric="night curtains off">
 
-          <circle class="dev__glow" cx="600" cy="330" r="32" fill="url(#heat)" />
-          <g class="dev__plume">
-            <path class="dev__wisp" d="M592 314 q-5 -10 0 -20" /><path class="dev__wisp" d="M600 314 q5 -12 0 -24" />
-            <path class="dev__wisp" d="M608 314 q-5 -10 0 -18" />
+          <circle class="dev__glow" cx="450" cy="508" r="34" fill="url(#heat)" />
+          <g class="dev__body">
+            <rect x="388" y="492" width="36" height="34" rx="2" />
+            <rect x="432" y="492" width="36" height="34" rx="2" />
+            <rect x="476" y="492" width="36" height="34" rx="2" />
+            <line x1="392" y1="502" x2="420" y2="502" /><line x1="392" y1="512" x2="420" y2="512" />
+            <line x1="436" y1="502" x2="464" y2="502" /><line x1="436" y1="512" x2="464" y2="512" />
+            <line x1="480" y1="502" x2="508" y2="502" /><line x1="480" y1="512" x2="508" y2="512" />
           </g>
-          <g class="dev__body"><rect x="578" y="312" width="44" height="38" rx="4" /></g>
-          <g class="dev__spin" style="--spin:1.7s">
-            <circle class="dev__hub" cx="600" cy="331" r="3" />
-            <ellipse class="dev__blade" cx="600" cy="320" rx="3.6" ry="9" />
-            <ellipse class="dev__blade" cx="610" cy="331" rx="9" ry="3.6" />
-            <ellipse class="dev__blade" cx="600" cy="342" rx="3.6" ry="9" />
-            <ellipse class="dev__blade" cx="590" cy="331" rx="9" ry="3.6" />
+          <g class="dev__frost">
+            <path d="M396 497 v4 M394 499 h4" />
+            <path d="M484 519 v3 M482.5 520.5 h3" />
           </g>
-          <g class="dev__tag" transform="translate(630 312)">
-            <line x1="-10" y1="14" x2="0" y2="14" stroke="#4fc4cf" stroke-width="1" />
-            <text x="4" y="18">Exhaust dumping cooled air</text>
+          <g class="dev__tag" transform="translate(300 486)">
+            <line x1="150" y1="22" x2="160" y2="26" stroke="#4fc4cf" stroke-width="1" />
+            <text x="0" y="0">Open cases bleeding cold into the aisle</text>
           </g>
         </g>
 
-        <g class="dev" data-dev="switch" data-name="Switchgear" data-cost="640" data-metric="PF 0.78" transform="translate(243 -242)">
+        <g class="dev" data-dev="switch" data-name="Switchgear" data-cost="690" data-metric="PF 0.78">
 
-          <circle class="dev__glow" cx="365" cy="452" r="34" fill="url(#heat)" />
+          <circle class="dev__glow" cx="752" cy="516" r="32" fill="url(#heat)" />
           <g class="dev__body">
-            <rect x="342" y="430" width="46" height="48" rx="3" />
-            <rect x="349" y="436" width="14" height="10" rx="1.5" /><rect x="367" y="436" width="14" height="10" rx="1.5" />
-            <rect x="349" y="450" width="14" height="10" rx="1.5" /><rect x="367" y="450" width="14" height="10" rx="1.5" />
+            <rect x="730" y="496" width="44" height="44" rx="3" />
+            <rect x="736" y="502" width="13" height="9" rx="1.5" /><rect x="753" y="502" width="13" height="9" rx="1.5" />
+            <rect x="736" y="515" width="13" height="9" rx="1.5" /><rect x="753" y="515" width="13" height="9" rx="1.5" />
           </g>
-          <path class="dev__gauge" d="M348 474 a16 16 0 0 1 32 0" fill="none" />
-          <line class="dev__needle" x1="364" y1="474" x2="352" y2="468" />
-          <path class="dev__arc" d="M356 442 l4 4 l-3 3 l5 5" fill="none" />
-          <g class="dev__tag" transform="translate(150 494)">
-            <line x1="186" y1="-24" x2="196" y2="-16" stroke="#4fc4cf" stroke-width="1" />
+          <path class="dev__gauge" d="M736 534 a16 16 0 0 1 32 0" fill="none" />
+          <line class="dev__needle" x1="752" y1="534" x2="740" y2="528" />
+          <path class="dev__arc" d="M744 504 l4 4 l-3 3 l5 5" fill="none" />
+          <g class="dev__tag" transform="translate(636 544)">
+            <line x1="98" y1="-24" x2="108" y2="-16" stroke="#4fc4cf" stroke-width="1" />
             <text x="0" y="0">Power factor sagging at the switchgear</text>
           </g>
         </g>
 
-        <g class="dev" data-dev="boiler" data-name="Boilers" data-cost="480" data-metric="9 cycles/hr">
+        <g class="dev" data-dev="deli" data-name="Bakery &amp; hot deli" data-cost="600" data-metric="peak-hour spikes">
 
-          <circle class="dev__glow" cx="500" cy="520" r="32" fill="url(#heat)" />
+          <circle class="dev__glow" cx="648" cy="508" r="32" fill="url(#heat)" />
           <g class="dev__cycle">
             <g class="dev__body">
-              <rect x="482" y="498" width="36" height="46" rx="6" />
-              <line x1="500" y1="498" x2="500" y2="488" /><circle cx="510" cy="506" r="3" />
+              <rect x="628" y="486" width="40" height="40" rx="4" />
+              <line x1="628" y1="500" x2="668" y2="500" /><circle cx="638" cy="493" r="2.4" />
+              <rect x="634" y="506" width="28" height="14" rx="2" />
             </g>
-            <path class="dev__flame" d="M500 540 q-7 -8 -3 -16 q4 5 3 -2 q5 6 3 11 q3 -3 3 2 q-1 6 -9 5 Z" />
+            <path class="dev__flame" d="M648 520 q-7 -8 -3 -16 q4 5 3 -2 q5 6 3 11 q3 -3 3 2 q-1 6 -9 5 Z" />
           </g>
-          <g class="dev__tag" transform="translate(374 556)">
-            <line x1="120" y1="-30" x2="130" y2="-24" stroke="#4fc4cf" stroke-width="1" />
-            <text x="0" y="0">Boilers short-cycling</text>
+          <g class="dev__tag" transform="translate(540 540)">
+            <line x1="96" y1="-28" x2="106" y2="-22" stroke="#4fc4cf" stroke-width="1" />
+            <text x="0" y="0">Bakery &amp; hot deli spiking demand</text>
           </g>
         </g>
 
-        <g class="dev" data-dev="chiller" data-name="Chiller" data-cost="1180" data-metric="42% part-load">
+        <g class="dev" data-dev="rack" data-name="Refrigeration rack" data-cost="1480" data-metric="0% unloading">
 
-          <circle class="dev__glow" cx="720" cy="512" r="36" fill="url(#heat)" />
+          <circle class="dev__glow" cx="718" cy="462" r="38" fill="url(#heat)" />
           <g class="dev__body">
-            <rect x="694" y="496" width="52" height="34" rx="9" />
-            <line x1="730" y1="496" x2="730" y2="530" />
-            <path d="M744 504 q10 8 0 18" fill="none" />
+            <rect x="690" y="442" width="58" height="40" rx="3" />
+            <rect x="696" y="435" width="10" height="9" rx="2" /><rect x="713" y="435" width="10" height="9" rx="2" /><rect x="730" y="435" width="10" height="9" rx="2" />
+            <line x1="690" y1="468" x2="748" y2="468" />
           </g>
           <g class="dev__spin dev__spin--stutter" style="--spin:5s">
-            <circle class="dev__hub" cx="708" cy="513" r="2.6" />
-            <line class="dev__vane" x1="708" y1="513" x2="708" y2="503" /><line class="dev__vane" x1="708" y1="513" x2="718" y2="513" />
-            <line class="dev__vane" x1="708" y1="513" x2="708" y2="523" /><line class="dev__vane" x1="708" y1="513" x2="698" y2="513" />
+            <circle class="dev__hub" cx="718" cy="465" r="2.6" />
+            <line class="dev__vane" x1="718" y1="465" x2="718" y2="455" /><line class="dev__vane" x1="718" y1="465" x2="728" y2="465" />
+            <line class="dev__vane" x1="718" y1="465" x2="718" y2="475" /><line class="dev__vane" x1="718" y1="465" x2="708" y2="465" />
           </g>
-          <g class="dev__tag" transform="translate(704 556)">
-            <line x1="20" y1="-36" x2="28" y2="-28" stroke="#4fc4cf" stroke-width="1" />
-            <text x="0" y="0">Chiller stuck at part-load</text>
-          </g>
-        </g>
-
-        <g class="dev" data-dev="pump" data-name="Hot-water pumps" data-cost="410" data-metric="runs 24/7" transform="translate(120 44)">
-
-          <circle class="dev__glow" cx="470" cy="372" r="30" fill="url(#heat)" />
-          <g class="dev__body">
-            <circle cx="470" cy="372" r="15" />
-            <rect x="466" y="349" width="8" height="10" rx="1" />
-            <rect x="484" y="368" width="11" height="9" rx="1" />
-          </g>
-          <g class="dev__spin" style="--spin:2s">
-            <circle class="dev__hub" cx="470" cy="372" r="3" />
-            <path class="dev__vane" d="M470 372 q9 -5 12 3" fill="none" />
-            <path class="dev__vane" d="M470 372 q-9 5 -12 -3" fill="none" />
-            <path class="dev__vane" d="M470 372 q5 9 -3 12" fill="none" />
-            <path class="dev__vane" d="M470 372 q-5 -9 3 -12" fill="none" />
-          </g>
-          <g class="dev__tag" transform="translate(360 338)">
-            <line x1="100" y1="22" x2="110" y2="30" stroke="#4fc4cf" stroke-width="1" />
-            <text x="0" y="0">Hot-water loop running around the clock</text>
+          <g class="dev__tag" transform="translate(602 430)">
+            <line x1="104" y1="22" x2="114" y2="30" stroke="#4fc4cf" stroke-width="1" />
+            <text x="0" y="0">Refrigeration rack never cycling down</text>
           </g>
         </g>
 
-        <g class="dev" data-dev="fridge" data-name="Walk-in cooler" data-cost="290" data-metric="no defrost cycle">
+        <g class="dev" data-dev="antisweat" data-name="Anti-sweat heaters" data-cost="320" data-metric="full power 24/7">
 
-          <circle class="dev__glow" cx="360" cy="324" r="30" fill="url(#heat)" />
+          <circle class="dev__glow" cx="580" cy="502" r="30" fill="url(#heat)" />
           <g class="dev__body">
-            <rect x="338" y="306" width="44" height="38" rx="3" />
-            <line x1="344" y1="313" x2="354" y2="313" /><line x1="344" y1="321" x2="354" y2="321" /><line x1="344" y1="329" x2="354" y2="329" /><line x1="344" y1="337" x2="354" y2="337" />
+            <rect x="560" y="486" width="18" height="34" rx="2" />
+            <rect x="582" y="486" width="18" height="34" rx="2" />
+            <line x1="569" y1="486" x2="569" y2="520" /><line x1="591" y1="486" x2="591" y2="520" />
+          </g>
+          <g class="dev__coil">
+            <path d="M560 489 h18 M560 503 h18 M560 517 h18" />
+            <path d="M582 489 h18 M582 503 h18 M582 517 h18" />
+          </g>
+          <g class="dev__tag" transform="translate(470 478)">
+            <line x1="100" y1="22" x2="110" y2="28" stroke="#4fc4cf" stroke-width="1" />
+            <text x="0" y="0">Case-door heaters on around the clock</text>
+          </g>
+        </g>
+
+        <g class="dev" data-dev="walkin" data-name="Walk-in freezer" data-cost="540" data-metric="no defrost cycle">
+
+          <circle class="dev__glow" cx="305" cy="460" r="32" fill="url(#heat)" />
+          <g class="dev__body">
+            <rect x="282" y="438" width="46" height="44" rx="3" />
+            <line x1="288" y1="446" x2="298" y2="446" /><line x1="288" y1="454" x2="298" y2="454" /><line x1="288" y1="462" x2="298" y2="462" /><line x1="288" y1="470" x2="298" y2="470" />
           </g>
           <g class="dev__frost">
-            <path d="M345 311 v4 M343 313 h4 M344 312 l2 2 M346 312 l-2 2" />
-            <path d="M351 335 v3 M349.5 336.5 h3" />
+            <path d="M289 443 v4 M287 445 h4 M288 444 l2 2 M290 444 l-2 2" />
+            <path d="M295 474 v3 M293.5 475.5 h3" />
           </g>
           <g class="dev__spin" style="--spin:2.6s">
-            <circle class="dev__hub" cx="368" cy="325" r="2.6" />
-            <ellipse class="dev__blade" cx="368" cy="318" rx="2.8" ry="6" />
-            <ellipse class="dev__blade" cx="375" cy="325" rx="6" ry="2.8" />
-            <ellipse class="dev__blade" cx="368" cy="332" rx="2.8" ry="6" />
-            <ellipse class="dev__blade" cx="361" cy="325" rx="6" ry="2.8" />
+            <circle class="dev__hub" cx="314" cy="461" r="2.6" />
+            <ellipse class="dev__blade" cx="314" cy="454" rx="2.8" ry="6" />
+            <ellipse class="dev__blade" cx="321" cy="461" rx="6" ry="2.8" />
+            <ellipse class="dev__blade" cx="314" cy="468" rx="2.8" ry="6" />
+            <ellipse class="dev__blade" cx="307" cy="461" rx="6" ry="2.8" />
           </g>
-          <g class="dev__tag" transform="translate(160 300)">
-            <line x1="172" y1="22" x2="182" y2="30" stroke="#4fc4cf" stroke-width="1" />
-            <text x="0" y="0">Walk-in refrigeration never cycling off</text>
+          <g class="dev__tag" transform="translate(150 436)">
+            <line x1="138" y1="22" x2="148" y2="28" stroke="#4fc4cf" stroke-width="1" />
+            <text x="0" y="0">Walk-in freezer never cycling off</text>
           </g>
         </g>
       </svg>
@@ -263,51 +246,55 @@ const branches = [
         <rect x="0" y="0" width="1000" height="640" fill="url(#sky)" />
         <circle cx="760" cy="150" r="240" fill="url(#moon)" />
 
+        <!-- big-box store, front elevation: body + fascia band + parapet cap -->
         <g fill="#1b1f23" stroke="rgba(220,228,230,0.18)" stroke-width="1.3">
-          <rect x="300" y="240" width="130" height="320" />
-          <rect x="650" y="240" width="130" height="320" />
-          <rect x="430" y="120" width="220" height="440" />
-          <rect x="418" y="104" width="244" height="18" />
-          <rect x="288" y="226" width="154" height="16" />
-          <rect x="638" y="226" width="154" height="16" />
-          <rect x="508" y="90" width="64" height="16" />
+          <rect x="250" y="404" width="540" height="156" />
+          <rect x="250" y="360" width="540" height="44" />
+          <rect x="240" y="354" width="560" height="8" />
         </g>
-        <path d="M488 104 L540 78 L592 104 Z" fill="#20252a" stroke="rgba(220,228,230,0.2)" stroke-width="1.3" />
-        <rect x="280" y="556" width="520" height="6" fill="#15181b" />
+
+        <!-- rooftop unit housings peeking above the parapet -->
+        <g fill="#15181b" stroke="rgba(220,228,230,0.2)" stroke-width="1.2">
+          <rect x="382" y="326" width="58" height="30" rx="2" />
+          <rect x="500" y="332" width="42" height="24" rx="2" />
+          <rect x="602" y="330" width="40" height="26" rx="2" />
+        </g>
+
+        <!-- illuminated fascia sign band (blank, teal-lit) -->
+        <rect class="lit-win" x="278" y="370" width="484" height="22" rx="3" fill="#4fc4cf" opacity="0.14" filter="url(#lit)" />
+        <line class="lit-win" x1="282" y1="381" x2="758" y2="381" stroke="#4fc4cf" stroke-width="1.2" opacity="0.55" filter="url(#lit)" />
+
+        <!-- storefront glass (dark), with interior sales-floor glow showing through -->
+        <rect x="268" y="404" width="504" height="141" fill="#11151a" stroke="rgba(220,228,230,0.14)" stroke-width="1" />
+        <ellipse cx="520" cy="506" rx="244" ry="66" fill="url(#lobby)" />
+        <rect class="lit-win" x="276" y="474" width="488" height="68" rx="2" fill="#4fc4cf" opacity="0.10" filter="url(#lit)" />
+        <g stroke="rgba(220,228,230,0.10)" stroke-width="1">
+          {[316, 364, 412, 460, 508, 556, 604, 652, 700, 748].map((x) => (<line x1={x} y1="404" x2={x} y2="545" />))}
+        </g>
+
+        <!-- entrance: sliding glass doors + flat awning -->
+        <rect x="486" y="452" width="68" height="93" fill="#0e1114" stroke="rgba(79,196,207,0.5)" stroke-width="1.4" />
+        <line x1="520" y1="452" x2="520" y2="545" stroke="rgba(79,196,207,0.4)" stroke-width="1.1" />
+        <rect class="lit-win" x="490" y="500" width="60" height="44" rx="1" fill="#4fc4cf" opacity="0.18" filter="url(#lit)" />
+        <g fill="#1b1f23" stroke="rgba(220,228,230,0.22)" stroke-width="1.3">
+          <rect x="468" y="446" width="104" height="8" rx="2" />
+        </g>
+
+        <!-- base sill + grade line -->
+        <rect x="250" y="545" width="540" height="15" fill="#15181b" />
         <line x1="120" y1="562" x2="880" y2="562" stroke="rgba(220,228,230,0.16)" stroke-width="1.3" />
 
-        <g stroke="rgba(220,228,230,0.07)" stroke-width="1">
-          <line x1="474" y1="124" x2="474" y2="556" /><line x1="518" y1="124" x2="518" y2="556" />
-          <line x1="562" y1="124" x2="562" y2="556" /><line x1="606" y1="124" x2="606" y2="556" />
+        <!-- cart corral tell, ground level beside the entrance -->
+        <g fill="none" stroke="rgba(220,228,230,0.3)" stroke-width="1.2" stroke-linejoin="round">
+          <path d="M300 548 h22 l-4 -13 h-15" />
+          <line x1="300" y1="548" x2="295" y2="535" />
+          <path d="M313 548 h22 l-4 -13 h-15" />
+          <line x1="313" y1="548" x2="308" y2="535" />
         </g>
-
-        <g fill="#11151a" stroke="rgba(220,228,230,0.12)" stroke-width="1">
-          {tower.filter((w) => !w.lit).map((w) => (<rect x={w.x} y={w.y} width={w.w} height={w.h} rx="1.5" />))}
-          {wingL.filter((w) => !w.lit).map((w) => (<rect x={w.x} y={w.y} width={w.w} height={w.h} rx="1.5" />))}
-          {wingR.filter((w) => !w.lit).map((w) => (<rect x={w.x} y={w.y} width={w.w} height={w.h} rx="1.5" />))}
+        <g fill="rgba(220,228,230,0.3)">
+          <circle cx="306" cy="552" r="1.6" /><circle cx="318" cy="552" r="1.6" />
+          <circle cx="319" cy="552" r="1.6" /><circle cx="331" cy="552" r="1.6" />
         </g>
-
-        <g class="lit-win" fill="#4fc4cf" filter="url(#lit)">
-          {tower.filter((w) => w.lit).map((w) => (<rect x={w.x} y={w.y} width={w.w} height={w.h} rx="1.5" opacity="0.78" />))}
-          {wingL.filter((w) => w.lit).map((w) => (<rect x={w.x} y={w.y} width={w.w} height={w.h} rx="1.5" opacity="0.78" />))}
-          {wingR.filter((w) => w.lit).map((w) => (<rect x={w.x} y={w.y} width={w.w} height={w.h} rx="1.5" opacity="0.78" />))}
-        </g>
-
-        <ellipse cx="540" cy="556" rx="80" ry="60" fill="url(#lobby)" />
-        <path d="M508 560 V512 a32 32 0 0 1 64 0 V560 Z" fill="#0e1114" stroke="rgba(79,196,207,0.5)" stroke-width="1.4" />
-        <path d="M508 512 a32 32 0 0 1 64 0" fill="none" stroke="#4fc4cf" stroke-width="1.4" opacity="0.7" />
-
-        <!-- hotel tells: a porte-cochere over the entrance + a lit rooftop sign -->
-        <g fill="#1b1f23" stroke="rgba(220,228,230,0.22)" stroke-width="1.3">
-          <rect x="466" y="532" width="148" height="8" rx="2" />
-          <line x1="476" y1="540" x2="476" y2="560" />
-          <line x1="604" y1="540" x2="604" y2="560" />
-        </g>
-        <rect x="556" y="58" width="11" height="46" fill="#15181b" stroke="rgba(220,228,230,0.2)" stroke-width="1" />
-        <rect class="lit-win" x="558.5" y="61" width="6" height="40" rx="1" fill="#4fc4cf" opacity="0.85" filter="url(#lit)" />
-        <text class="hero__hotelmark" x="540" y="524" text-anchor="middle"
-          fill="#4fc4cf" filter="url(#lit)"
-          font-family="var(--font-mono)" font-size="15" letter-spacing="5" font-weight="500">HOTEL</text>
       </svg>
     </div>
 
@@ -409,7 +396,7 @@ const branches = [
       });
 
       // self-demo: sweep across three trouble spots, then hand control over
-      const demoPts = ["ahu", "chiller", "switch"]
+      const demoPts = ["condenser", "rack", "switch"]
         .map((n) => scene.querySelector('.dev[data-dev="' + n + '"]')).filter(Boolean);
       if (demoPts.length) {
         let seg = 0, segStart = 0, phase = "hold", dstart = 0;
@@ -440,7 +427,7 @@ const branches = [
     }
 
     // touch / coarse: auto-tour every trouble spot on a loop
-    const order = ["ahu", "fridge", "switch", "pump", "boiler", "chiller", "laundry"]
+    const order = ["condenser", "rack", "cases", "walkin", "antisweat", "deli", "switch"]
       .map((n) => scene.querySelector('.dev[data-dev="' + n + '"]')).filter(Boolean);
     if (!order.length) return;
     const TRAVEL = 1700, HOLD = 1300;
@@ -522,7 +509,6 @@ const branches = [
 
   .wires { stroke: var(--h-red, #ff5a3c); }
   .lit-win { fill: var(--h-teal, #4fc4cf); }
-  .hero__hotelmark { font-family: var(--font-mono); fill: var(--h-teal, #4fc4cf); }
   .wire { opacity: 0.34; }
   .wire--main { stroke-width: 2.3; opacity: 0.5; }
   .wire--run { stroke-width: 1.5; }
@@ -539,6 +525,8 @@ const branches = [
   .dev__flame { fill: #ff8a4d; }
   .dev__wisp { stroke: rgba(120,170,150,0.5); stroke-width: 1.4; fill: none; stroke-linecap: round; }
   .dev__frost { stroke: rgba(150,205,225,0.75); stroke-width: 1.1; fill: none; stroke-linecap: round; }
+  /* anti-sweat door heater coils: always-on resistive heat reads warm */
+  .dev__coil { stroke: #ff8a4d; stroke-width: 1.3; fill: none; stroke-linecap: round; opacity: 0.8; }
 
   .dev__tag { opacity: 0; transition: opacity 0.3s var(--ease-out-quart); }
   .dev__tag text {
@@ -602,9 +590,10 @@ const branches = [
     @keyframes flow { to { stroke-dashoffset: -29; } }
     .dev__glow { animation: hotPulse 2.8s ease-in-out infinite; }
     .dev[data-dev="switch"] .dev__glow { animation-duration: 3.4s; animation-delay: 0.5s; }
-    .dev[data-dev="chiller"] .dev__glow { animation-duration: 3s; animation-delay: 0.9s; }
-    .dev[data-dev="laundry"] .dev__glow { animation-duration: 3.6s; animation-delay: 0.3s; }
-    .dev[data-dev="boiler"] .dev__glow { animation-duration: 3.1s; animation-delay: 0.7s; }
+    .dev[data-dev="rack"] .dev__glow { animation-duration: 3s; animation-delay: 0.9s; }
+    .dev[data-dev="cases"] .dev__glow { animation-duration: 3.6s; animation-delay: 0.3s; }
+    .dev[data-dev="deli"] .dev__glow { animation-duration: 3.1s; animation-delay: 0.7s; }
+    .dev[data-dev="antisweat"] .dev__glow { animation-duration: 2.7s; animation-delay: 0.2s; }
     @keyframes hotPulse { 0%, 100% { opacity: 0.45; transform: scale(0.9); } 50% { opacity: 0.9; transform: scale(1.1); } }
     .dev__spin { transform-box: fill-box; transform-origin: center; animation: spin var(--spin, 2.4s) linear infinite; }
     .dev__spin--stutter { animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.3); }

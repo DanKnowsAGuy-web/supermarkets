@@ -1,11 +1,11 @@
 ---
-// "The healing of a hotel" — merged scroll scene, v3.
+// "The healing of a supermarket" — merged scroll scene, v3.
 // Grid power stays dirty the entire time: distortion is what the utility
 // delivers. The harmonizer sits pressed against the building like a shield,
 // and only what's behind it transforms. The circular device on the ground
-// floor is the building meter; the
-// pool/laundry drive drum sits just left of the elevator shaft. Sparks ride
-// the riser while dirty; clean blue sine waves feed every line once healed.
+// floor is the building meter; the walk-in condensing unit sits just left of
+// the refrigeration rack chase. Sparks ride the riser while dirty; clean blue
+// sine waves feed every line once healed.
 import Disc from "./Disc.astro";
 const X0 = 80;
 const WAVE_END = 418; // reaches the building until the shield clips it back
@@ -86,7 +86,7 @@ const mCleanD = mWave(300, 60, false);
           class="hz__svg"
           viewBox="0 0 760 360"
           role="img"
-          aria-label="Distorted grid current flows toward a hotel cross-section, running its laundry and pool drives, PTAC units, and elevator motor hot; a harmonizer drops in against the building like a shield, and everything behind it heals: clean blue current feeds every line and the guest windows warm as the building settles. The grid side stays distorted throughout."
+          aria-label="Distorted grid current flows toward a supermarket cross-section, running its refrigerated display cases, compressor rack, and rooftop condenser hot; a harmonizer drops in against the building like a shield, and everything behind it heals: clean blue current feeds every line and the storefront glass warms as the building settles. The grid side stays distorted throughout."
         >
           <defs>
             <clipPath id="hz-clip-dist">
@@ -126,7 +126,7 @@ const mCleanD = mWave(300, 60, false);
             <path class="hz__riser hz__riser--mint" id="hz-drop-mint" d="M424 280 L424 312"></path>
 
             <!-- ground floor: the kWh meter (the circle) + reading beside it,
-                 then the pool/laundry drive drum left of the shaft -->
+                 then the walk-in condensing unit left of the rack chase -->
             <g class="hz__load" id="hz-base">
               <line class="hz__stub" x1="424" y1="312" x2="446" y2="312"></line>
               <path class="hz__mini" d={mini(426, 444, 312)}></path>
@@ -134,14 +134,14 @@ const mCleanD = mWave(300, 60, false);
               <line class="hz__load-ln" x1="455" y1="312" x2="461" y2="306"></line>
             </g>
 
-            <!-- PTAC fleet -->
+            <!-- refrigerated display-case lineup -->
             {ptacs.map((y, i) => (
               <g class="hz__load" id={`hz-ptac${i}`}>
                 <line class="hz__stub" x1="424" y1={y + 6} x2="582" y2={y + 6}></line>
                 <path class="hz__mini" d={mini(428, 580, y + 6)}></path>
-                <rect class="hz__load-ln" x="584" y={y} width="22" height="12" rx="2"></rect>
-                <line class="hz__load-ln" x1="588" y1={y + 4} x2="598" y2={y + 4}></line>
-                <circle class="hz__load-ln" cx="601" cy={y + 8} r="2.4"></circle>
+                <rect class="hz__load-ln" x="582" y={y - 2} width="26" height="16" rx="2"></rect>
+                <line class="hz__load-ln" x1="586" y1={y + 2} x2="604" y2={y + 2}></line>
+                <line class="hz__load-ln" x1="586" y1={y + 7} x2="604" y2={y + 7}></line>
                 <circle class="hz__ripple" cx="595" cy={y + 6} r="7"></circle>
                 {i === 0 && (
                   <>
@@ -155,16 +155,19 @@ const mCleanD = mWave(300, 60, false);
               </g>
             ))}
 
-            <!-- elevator: traction motor + cab with up/down arrows -->
+            <!-- refrigeration: rooftop condenser + compressor rack in the chase -->
             <g class="hz__load" id="hz-elev">
               <line class="hz__stub" x1="424" y1="84" x2="614" y2="84"></line>
               <path class="hz__mini" d={mini(428, 612, 84)}></path>
-              <rect class="hz__load-ln" x="616" y="72" width="32" height="24" rx="3"></rect>
-              <circle class="hz__load-ln" cx="632" cy="84" r="5"></circle>
-              <rect class="hz__load-ln" x="621" y="196" width="22" height="28" rx="2"></rect>
-              <path class="hz__load-ln" d="M626 176 l6 -9 6 9"></path>
-              <path class="hz__load-ln" d="M626 240 l6 9 6 -9"></path>
-              <circle class="hz__ripple" cx="632" cy="84" r="9"></circle>
+              <rect class="hz__load-ln" x="614" y="70" width="38" height="24" rx="3"></rect>
+              <circle class="hz__load-ln" cx="633" cy="82" r="6"></circle>
+              <line class="hz__load-ln" x1="633" y1="76" x2="633" y2="88"></line>
+              <line class="hz__load-ln" x1="627" y1="82" x2="639" y2="82"></line>
+              <rect class="hz__load-ln" x="616" y="196" width="34" height="28" rx="2"></rect>
+              <line class="hz__load-ln" x1="622" y1="196" x2="622" y2="190"></line><circle class="hz__load-ln" cx="622" cy="188" r="2"></circle>
+              <line class="hz__load-ln" x1="633" y1="196" x2="633" y2="190"></line><circle class="hz__load-ln" cx="633" cy="188" r="2"></circle>
+              <line class="hz__load-ln" x1="644" y1="196" x2="644" y2="190"></line><circle class="hz__load-ln" cx="644" cy="188" r="2"></circle>
+              <circle class="hz__ripple" cx="633" cy="84" r="9"></circle>
             </g>
 
             <!-- sparks riding the riser while the building is dirty -->
@@ -235,9 +238,9 @@ const mCleanD = mWave(300, 60, false);
           <span class="hz__m-num">1</span>
           <div class="hz__m-body">
             <p class="hz__m-text">
-              Your motors, elevators, and air conditioners pull electricity in
-              rough, uneven bursts. That roughness builds up inside your
-              building, not out on the grid.
+              Your compressors, refrigeration racks, and rooftop units pull
+              electricity in rough, uneven bursts. That roughness builds up
+              inside your building, not out on the grid.
             </p>
             <figure class="hz__m-viz hz__m-viz--dirty">
               <svg viewBox="0 0 300 60" role="img" aria-label="A rough, distorted current waveform.">
@@ -358,7 +361,7 @@ const mCleanD = mWave(300, 60, false);
     const rectD = $("hz-rect-d");
 
     const cards = [
-      "Your motors, elevators, and air conditioners pull electricity in rough, uneven bursts. That roughness builds up inside your building, not out on the grid.",
+      "Your compressors, refrigeration racks, and rooftop units pull electricity in rough, uneven bursts. That roughness builds up inside your building, not out on the grid.",
       "Rough power gets less done, so your building pulls more electricity to run the same machines. Your meter counts the waste, and it shows up on every bill.",
       "The harmonizer cleans up the power where it enters your building, before the roughness reaches your equipment. Your motors and compressors run cooler and steadier.",
       "Lower bills, fewer breakdowns, and equipment that lasts longer. Verified at supermarkets like yours: 8 to 14 percent energy savings.",
