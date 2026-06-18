@@ -15,9 +15,11 @@ const cats = {
   hvac: { label: "HVAC efficiency alone" },
   whole: { label: "Whole-building program" },
 };
-// Order: the four whole-building programs lead, then the single-measure cases
-// alternate harmonization <-> HVAC efficiency. Every figure counts up (ranges
-// animate both ends; the bottling figure carries a "+" prefix).
+// Order: the two supermarket results lead, then the retail/refrigeration cases
+// most like a grocery store (mall HVAC, ammonia refrigeration, distribution),
+// then the flagship whole-building programs and general cases. Hospitality is
+// kept (real verified data) but sinks to the back. Every figure counts up
+// (ranges animate both ends; the bottling figure carries a "+" prefix).
 const cases = [
   {
     cat: "hvac",
@@ -40,6 +42,36 @@ const cases = [
     verifier: "CFO-verified, 12 months",
   },
   {
+    cat: "hvac",
+    type: "Retail",
+    place: "Elizabeth, NJ",
+    name: ["Simon Property Gr.", "Jersey Gardens"],
+    fval: "21.1", num: 21.1, dec: 1, funit: "%",
+    unit: "kWh reduction, refrigerant-side efficiency",
+    scope: "mall HVAC · $41,473/yr · 12-month payback",
+    verifier: "IPMVP third-party M&V",
+  },
+  {
+    cat: "hvac",
+    type: "Logistics",
+    place: "United States",
+    name: ["DHL", "Refrigeration Plant"],
+    fval: "15", num: 15, dec: 0, funit: "%",
+    unit: "compressor efficiency gain, ammonia system",
+    scope: "ammonia refrigeration · 13.8-month payback",
+    verifier: "Compressor efficiency study",
+  },
+  {
+    cat: "hvac",
+    type: "Distribution",
+    place: "Gulfport, MS",
+    name: ["Anheuser-Busch,", "Mitchell Distributing"],
+    fval: "19.2", num: 19.2, dec: 1, funit: "%",
+    unit: "RTU energy reduction, refrigerant-side treatment",
+    scope: "HVAC + refrigeration · 20-month payback",
+    verifier: "Verified on the meter and bill",
+  },
+  {
     cat: "whole",
     type: "Auto Dealership",
     place: "Arizona",
@@ -48,16 +80,6 @@ const cases = [
     unit: "annual energy cut, full-stack program",
     scope: "power quality + HVAC + lighting · 1.06M kWh/yr · 25-mo payback",
     verifier: "Documented project total",
-  },
-  {
-    cat: "whole",
-    type: "Hospital",
-    place: "Naperville, IL",
-    name: ["Edward", "Hospital"],
-    fval: "24", num: 24, dec: 0, funit: "%",
-    unit: "kWh reduction over 9 months, whole facility",
-    scope: "power factor + voltage conditioning + line reactors · $84,270 saved",
-    verifier: "Metered; both phases beat projection",
   },
   {
     cat: "whole",
@@ -78,6 +100,36 @@ const cases = [
     unit: "average reduction across city facilities, year one",
     scope: "power conditioning + LED retrofit · facilities-wide",
     verifier: "First-year monitored",
+  },
+  {
+    cat: "whole",
+    type: "Hospital",
+    place: "Naperville, IL",
+    name: ["Edward", "Hospital"],
+    fval: "24", num: 24, dec: 0, funit: "%",
+    unit: "kWh reduction over 9 months, whole facility",
+    scope: "power factor + voltage conditioning + line reactors · $84,270 saved",
+    verifier: "Metered; both phases beat projection",
+  },
+  {
+    cat: "harm",
+    type: "Office + Warehouse",
+    place: "Atlanta, GA",
+    name: ["Corey", "Center"],
+    fval: "14.8", num: 14.8, dec: 1, funit: "%",
+    unit: "kWh reduction, four-year average",
+    scope: "35,000 sq ft · 8 devices, one per panel",
+    verifier: "Verified by Noesis",
+  },
+  {
+    cat: "harm",
+    type: "Office (historic)",
+    place: "Birmingham, AL",
+    name: ["The Massey", "Building"],
+    range: [9, 19], funit: "%",
+    unit: "kWh reduction, metered floor by floor",
+    scope: "10 floors · 10 devices, one per floor",
+    verifier: "Metered impact evaluation",
   },
   {
     cat: "harm",
@@ -110,36 +162,6 @@ const cases = [
     verifier: "Verified by CHI Energy",
   },
   {
-    cat: "hvac",
-    type: "Retail",
-    place: "Elizabeth, NJ",
-    name: ["Simon Property Gr.", "Jersey Gardens"],
-    fval: "21.1", num: 21.1, dec: 1, funit: "%",
-    unit: "kWh reduction, refrigerant-side efficiency",
-    scope: "mall HVAC · $41,473/yr · 12-month payback",
-    verifier: "IPMVP third-party M&V",
-  },
-  {
-    cat: "harm",
-    type: "Office + Warehouse",
-    place: "Atlanta, GA",
-    name: ["Corey", "Center"],
-    fval: "14.8", num: 14.8, dec: 1, funit: "%",
-    unit: "kWh reduction, four-year average",
-    scope: "35,000 sq ft · 8 devices, one per panel",
-    verifier: "Verified by Noesis",
-  },
-  {
-    cat: "hvac",
-    type: "Distribution",
-    place: "Gulfport, MS",
-    name: ["Anheuser-Busch,", "Mitchell Distributing"],
-    fval: "19.2", num: 19.2, dec: 1, funit: "%",
-    unit: "RTU energy reduction, refrigerant-side treatment",
-    scope: "HVAC + refrigeration · 20-month payback",
-    verifier: "Verified on the meter and bill",
-  },
-  {
     cat: "harm",
     type: "Hospitality",
     place: "Las Vegas, NV",
@@ -148,26 +170,6 @@ const cases = [
     unit: "kW demand reduction, metered panels",
     scope: "arena lighting + receptacle panels, 45-day baseline",
     verifier: "Third-party meter data",
-  },
-  {
-    cat: "hvac",
-    type: "Logistics",
-    place: "United States",
-    name: ["DHL", "Refrigeration Plant"],
-    fval: "15", num: 15, dec: 0, funit: "%",
-    unit: "compressor efficiency gain, ammonia system",
-    scope: "ammonia refrigeration · 13.8-month payback",
-    verifier: "Compressor efficiency study",
-  },
-  {
-    cat: "harm",
-    type: "Office (historic)",
-    place: "Birmingham, AL",
-    name: ["The Massey", "Building"],
-    range: [9, 19], funit: "%",
-    unit: "kWh reduction, metered floor by floor",
-    scope: "10 floors · 10 devices, one per floor",
-    verifier: "Metered impact evaluation",
   },
 ];
 ---
